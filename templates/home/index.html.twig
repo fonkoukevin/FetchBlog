@@ -1,0 +1,297 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+    <style>
+        .text {
+            padding-top: 60px;
+            padding-right: 170px;
+        }
+
+        .icons-container {
+            display: flex;
+            align-items: center; /* Pour aligner les icônes verticalement au centre */
+            position: absolute;
+            bottom: 0;
+            right: 80%;
+            transform: translateX(-50%);
+
+            margin-bottom: -90px;
+        }
+
+        .fa-solid.fa-circle {
+            margin: 10px 10px; /* Ajustez cette marge selon vos besoins pour réduire l'espace entre le cercle et les icônes */
+
+        }
+
+
+        .fa-brands,
+        .fa-solid {
+            margin: 0; /* Réinitialiser les marges par défaut des icônes */
+        }
+
+        .handshake {
+            position: relative;
+        }
+
+        .handshake-img {
+            /* position: absolute; */
+            /* top: 0; */
+            /* right: -50px; Ajustez la position horizontale de la main */
+            animation: shake 2s infinite; /* Animation de secousse */
+            width: 27px;
+            height: auto;
+        }
+
+        .dis {
+            margin-bottom: 15px;
+            margin-right: 5px;
+        }
+
+        .redik {
+            margin-bottom: -15px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(10deg);
+            }
+            50% {
+                transform: rotate(0deg);
+            }
+            75% {
+                transform: rotate(-10deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        /*.text{*/
+        /*    margin-top: 80px;*/
+
+        /*}*/
+        .imgarrange {
+            margin-left: -30px;
+        }
+
+        .btn {
+            border-radius: 20px;
+        }
+
+        .ex {
+            background-image: url("../../../assets/couv3.jpg");
+            background-size: 1500px 500px; /* Taille spécifique de l'image de fond en pixels */
+            background-repeat: no-repeat; /* Empêche la répétition de l'image de fond */
+            background-position: center;
+            height: 100%;
+            border-radius: 19px;
+        }
+
+
+        .dot {
+            background-image: url("../../../assets/grid\(1\).png");
+            background-size: 50px 50px;
+            background-repeat: no-repeat;
+            height: 25%;
+            display: flex;
+            justify-content: center; /* Centre le contenu horizontalement */
+            align-items: center; /* Centre le contenu verticalement */
+            position: relative; /* Pour que les éléments enfants positionnés soient relativement positionnés par rapport à ce conteneur */
+            margin-top: -20px;
+            padding-bottom: 60px;
+        }
+
+        .redir {
+
+            padding-left: 150px;
+        }
+
+        .ded {
+            margin-bottom: 150px;
+            margin-top: 130px;
+        }
+
+
+        /* arrow effect */
+
+        .box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin-top: 220px;
+        }
+
+        .box span {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+            /* transform: rotate(45deg); */
+            margin: -10px;
+            animation: animate 2s infinite
+        }
+
+        .box span:nth-child(2) {
+            animation-delay: -0.2s;
+
+        }
+
+        .box span:nth-child(3) {
+            animation-delay: -0.4s;
+        }
+
+        @keyframes animate {
+            0% {
+                opacity: 0;
+                transform: rotate(45deg) translate(-20px, -20px);
+
+            }
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: rotate(45deg) translate(20px, 20px);
+
+            }
+        }
+
+
+        /* Styles pour les écrans de petite taille */
+        @media (max-width: 776px) {
+            /* Ajoutez vos styles CSS ici */
+            .icons-container {
+                text-align: center; /* Centrer horizontalement */
+                /* margin-top: 2rem; Ajouter une marge supérieure */
+                color: red;
+                justify-content: center;
+                /* background-color: green; */
+                margin-right: -250px;
+            }
+        }
+
+        .titre{
+            text-align: center;
+            margin : 20px auto 60px;
+            position: relative;
+            /* le relative est utilise quand on a un ::after,::before pour que les element qui herite aurons une postion relative */
+            line-height: 45px;
+            /* color:#555; */
+        }
+        .titre::after{
+
+            content: '';
+            background: #ff523b;
+            width: 20px;
+            height: 5px;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            /* indique just la postion en fonction de l'element parent */
+
+        }
+        @font-face {
+            font-family: "Roboto";
+            src: url('../../public/fonts/Roboto/Roboto-Condensed.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: "libreFranklin";
+            src: url('../../public/fonts/Libre_Franklin/LibreFranklin-VariableFont_wght.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .rob {
+            font-family: "Roboto";
+        }
+
+        .librefrank {
+            font-family: "libreFranklin";
+        }
+    </style>
+    <section class="container-fluid">
+        <div class="container-fluid mb-5 ">
+            <div class="row">
+                <div class="card mb-3 border-0">
+                    <div class="row g-0">
+
+                        <div class="col-md-6 me-5 my-5 d-flex justify-content-center text">
+                            <div class="card-body justify-content-center py-6 ms-4">
+                                <h4 class="card-title librefrank" style="font-size: 35px"><img src="{{ asset('images/main.png') }}"
+                                                                       alt="handshake"
+                                                                       class="handshake-img img-fluid dis librefrank" >Bienvenue
+                                    sur FetchBlog</h4>
+                                <p class="card-text rob">Votre espace pour partager des connaissances, découvrir de
+                                    nouvelles idées et profiter d'un moment agréable.</p>
+                                <button type="submit" class="btn btn-success" style="background: #2f5b74"><a
+                                            class="rob nav-link {{ app.current_route starts with "admin.recipe." ? 'active': '' }} btn btn-primary"
+                                            href="{{ path("posts") }}" style="background: none">Voir plus </a>
+                                </button>
+                                <br>
+                                <p class="card-text py-2 rob"><small class="text-body-secondary">───── Tech, Think,
+                                        Transform ─────</small>
+                                </p>
+
+                            </div>
+                        </div>
+                        <div class="col-5 me-5 my-4 ">
+                            <img src="{{ asset('images/t.jpeg') }}" style="width: 450px; height: 410px;"
+                                 class="img-fluid rounded-0 imgarrange" alt="logo">
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- <div class="container-fluid mb-5">
+                <div class="row">
+                    <div class="col-md-6 me-5 mb-3">
+                        <div class="card border-0 h-100">
+                            <div class="card-body py-6 ms-4">
+                                <h4 class="card-title">FMk-store</h4>
+                                <p class="card-text">Découvrez un univers de style sans limites où la mode rencontre
+                                    l'individualité. Parcourez nos collections variées de vêtements, chaussures et
+                                    accessoires pour trouver votre expression unique de la tendance, créant ainsi un
+                                    style qui vous appartient et vous distingue.</p>
+                                <button type="submit" class="btn btn-success">Voir plus</button>
+                                <p class="card-text"><small class="text-body-secondary">-------- Votre style, notre
+                                        passion.------</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/Pictures/Black And White Modern Brush Font Logo.png"
+                            class="img-fluid rounded-0 imgarrange" alt="logo">
+                    </div>
+                </div>
+            </div>
+             -->
+        </div>
+    </section>
+
+
+
+
+    <section class="py-5">
+        <h2 class="titre">Posts Récemment Publiés</h2>
+
+    </section>
+{% endblock %}
+
