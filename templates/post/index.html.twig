@@ -405,6 +405,12 @@
             margin-right: 5px;
         }
 
+        /*search*/
+        .not-clickable {
+            pointer-events: none;
+            opacity: 0.9; /* Rend le bouton visuellement désactivé */
+        }
+
     </style>
 
 
@@ -478,10 +484,10 @@
         <nav>
             <i class='bx bx-menu'></i>
             <a href="#" class="nav-link">Categories</a>
-            <form action="#">
+            <form id="search-form" action="#" onsubmit="return false;">
                 <div class="form-input">
-                    <input type="search" placeholder="Search...">
-                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off">
+                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button>
                 </div>
             </form>
             <input type="checkbox" id="switch-mode" hidden>
@@ -498,38 +504,114 @@
 
         <!-- MAIN -->
         <div class="main p-3">
-            {#            <div class="text-center"> #}
-            {#                <h1> #}
-            {#                    Sidebar Bootstrap 5 #}
-            {#                </h1> #}
-            {#            </div> #}
-
-
             <div class="container">
                 <div class="row">
                     <div class="col-8">
-                        {% for post in posts %}
-                            <div class="middle-panel">
+                        <div id="posts-container">
+                            {% for post in posts %}
+                                <div class="middle-panel">
+                                    <div class="post">
+                                        <div class="post-top">
+                                            <div class="dp">
+                                                <img src="{{ asset('images/' ~ post.user.image) }}" alt="">
+                                            </div>
+                                            <div class="post-info">
+                                                <p class="name">{{ post.user.username }}</p>
+                                            </div>
+                                            <i class="fa-solid fa-bookmark"></i>
+                                        </div>
+                                        <div class="post-content">
+                                            {{ post.title }}
+                                            <img src="{{ asset('images/' ~ post.image) }}" alt="">
+                                        </div>
+                                        <div class="post-bottom">
+                                            <div class="action like-action">
+                                                {% if post.isLikedByUser(app.user) %}
+                                                    <i class="fa-solid fa-thumbs-up liked" data-post-id="{{ post.id }}"></i>
+                                                {% else %}
+                                                    <i class="far fa-thumbs-up like-btn" data-post-id="{{ post.id }}"></i>
+                                                {% endif %}
+                                                <span>Like</span>
+                                            </div>
+                                            <div class="action">
+                                                <i class="far fa-comment"></i>
+                                                <span>Comment</span>
+                                            </div>
+                                            <div class="action">
+                                                <i class="fa fa-share"></i>
+                                                <span>Share</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-4" style="padding-left: 50px">
+                        <div class="con">
+                            <div class="profile">
+                                <div class="profile-header">
+                                    <img src="https://via.placeholder.com/50" alt="Profile Picture">
+                                    <div class="profile-info">
+                                        <p class="profile-name">Mon pseudo</p>
+                                        <p class="profile-details">Inscrit il y a 10 ans</p>
+                                    </div>
+                                </div>
+                                <div class="profile-description">
+                                    Oh right. I forgot about the battle. I just told you! You've killed me! You don't know how
+                                </div>
+                            </div>
 
+                            <div class="suggestions">
+                                <p class="suggestions-title">Suggestion</p>
+                                {% for post in posts %}
+                                    <div class="suggestion">
+                                        <img src="https://via.placeholder.com/73x73" style="border-radius: 20px" alt="John Doe">
+                                        <div class="suggestion-info">
+                                            <p class="suggestion-name">{{ post.user.username }}</p>
+                                            <p class="suggestion-details">15 amis mutuels</p>
+                                            <a href="#" class="add-friend">Ajouter en amis</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- MAIN -->
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('search-input');
+                const postsContainer = document.getElementById('posts-container');
+
+                searchInput.addEventListener('input', function() {
+                    const query = searchInput.value;
+                    if (query.length > 0) {
+                        fetch(`/post/search?q=${query}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                postsContainer.innerHTML = '';
+                                data.forEach(post => {
+                                    const postElement = document.createElement('div');
+                                    postElement.classList.add('middle-panel');
+                                    postElement.innerHTML = `
                                 <div class="post">
                                     <div class="post-top">
                                         <div class="dp">
-                                            <img src="{{ asset('images/' ~ post.user.image) }}" alt="">
-
+                                            <img src="/images/${post.user_image}" alt="">
                                         </div>
                                         <div class="post-info">
-                                            <p class="name">{{ post.user.username }}</p>
-                                            {#                                <span class="time">2 days ago</span> #}
+                                            <p class="name">${post.username}</p>
                                         </div>
                                         <i class="fa-solid fa-bookmark"></i>
                                     </div>
-
                                     <div class="post-content">
-                                        {{ post.title }}
-
-                                        <img src="{{ asset('images/' ~ post.image) }}" alt="">
+                                        ${post.title}
+                                        <img src="/images/${post.image}" alt="">
                                     </div>
-
                                     <div class="post-bottom">
                                         <div class="action">
                                             <i class="far fa-thumbs-up"></i>
@@ -545,52 +627,49 @@
                                         </div>
                                     </div>
                                 </div>
-
-
+                            `;
+                                    postsContainer.appendChild(postElement);
+                                });
+                            });
+                    } else {
+                        postsContainer.innerHTML = `{% for post in posts %}
+                    <div class="middle-panel">
+                        <div class="post">
+                            <div class="post-top">
+                                <div class="dp">
+                                    <img src="{{ asset('images/' ~ post.user.image) }}" alt="">
+                                </div>
+                                <div class="post-info">
+                                    <p class="name">{{ post.user.username }}</p>
+                                </div>
+                                <i class="fa-solid fa-bookmark"></i>
                             </div>
-
-                        {% endfor %}
-                    </div>
-                    <div class="col-4" style="padding-left: 50px">
-                        <div class="con">
-                            <div class="profile">
-                                <div class="profile-header">
-                                    <img src="https://via.placeholder.com/50" alt="Profile Picture">
-                                    <div class="profile-info">
-                                        <p class="profile-name">Mon pseudo</p>
-                                        <p class="profile-details">Inscrit il y a 10 ans</p>
-                                    </div>
-                                </div>
-                                <div class="profile-description">
-                                    Oh right. I forgot about the battle. I just told you! You've killed me! You don't
-                                    know how
-                                </div>
+                            <div class="post-content">
+                                {{ post.title }}
+                                <img src="{{ asset('images/' ~ post.image) }}" alt="">
                             </div>
-
-                            <div class="suggestions">
-                                <p class="suggestions-title">Suggestion</p>
-                                {% for post in posts %}
-                                <div class="suggestion">
-                                    <img src="https://via.placeholder.com/73x73" style="border-radius: 20px" alt="John Doe">
-                                    <div class="suggestion-info">
-                                        <p class="suggestion-name">{{ post.user.username }}</p>
-                                        <p class="suggestion-details">15 amis mutuels</p>
-                                        <a href="#" class="add-friend">Ajouter en amis</a>
-                                    </div>
+                            <div class="post-bottom">
+                                <div class="action">
+                                    <i class="far fa-thumbs-up"></i>
+                                    <span>Like</span>
                                 </div>
-                                {%endfor %}
-                                <!-- Repeat this block for each suggestion -->
-
-                                <!-- End of suggestion block -->
+                                <div class="action">
+                                    <i class="far fa-comment"></i>
+                                    <span>Comment</span>
+                                </div>
+                                <div class="action">
+                                    <i class="fa fa-share"></i>
+                                    <span>Share</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}`;
+                    }
+                });
+            });
+        </script>
 
-                </div>
-            </div>
-            </body>
-
-        </div>
         <!-- MAIN -->
     </section>
     <!-- CONTENT -->
@@ -602,6 +681,116 @@
 
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeButtons = document.querySelectorAll('.like-btn, .liked');
+
+            likeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('liked')) {
+                        alert('You have already liked this post.');
+                        return;
+                    }
+
+                    const postId = this.getAttribute('data-post-id');
+                    fetch(`/post/${postId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-Token': '{{ csrf_token('like') }}' // Utiliser un token CSRF pour la sécurité
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message === 'Post liked successfully') {
+                                this.classList.remove('far', 'fa-thumbs-up', 'like-btn');
+                                this.classList.add('fa-solid', 'fa-thumbs-up', 'liked');
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            });
+        });
+
+        // search
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const postsContainer = document.getElementById('posts-container');
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value;
+
+                if (query.length > 0) {
+                    fetch(`/post/search?q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            postsContainer.innerHTML = '';
+
+                            data.forEach(post => {
+                                const postElement = document.createElement('div');
+                                postElement.className = 'middle-panel';
+                                postElement.innerHTML = `
+                            <div class="post">
+                                <div class="post-top">
+                                    <div class="dp">
+                                        <img src="{{ asset('images/') }}${post.user_image}" alt="">
+                                    </div>
+                                    <div class="post-info">
+                                        <p class="name">${post.username}</p>
+                                    </div>
+                                    <i class="fa-solid fa-bookmark"></i>
+                                </div>
+                                <div class="post-content">
+                                    ${post.title}
+                                    <img src="{{ asset('images/') }}${post.image}" alt="">
+                                </div>
+                                <div class="post-bottom">
+                                    <div class="action">
+                                        <i class="far fa-thumbs-up"></i>
+                                        <span>Like</span>
+                                    </div>
+                                    <div class="action">
+                                        <i class="far fa-comment"></i>
+                                        <span>Comment</span>
+                                    </div>
+                                    <div class="action">
+                                        <i class="fa fa-share"></i>
+                                        <span>Share</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                                postsContainer.appendChild(postElement);
+                            });
+                        });
+                } else {
+                    // Reload all posts if the search input is cleared
+                    fetch(`/post`)
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newPostsContainer = doc.getElementById('posts-container');
+                            postsContainer.innerHTML = newPostsContainer.innerHTML;
+                        });
+                }
+            });
+        });
+
+
+
+
+
+
+
+
+
+
         const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
         allSideMenu.forEach(item => {
