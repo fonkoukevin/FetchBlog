@@ -466,8 +466,8 @@
 
     <!-- SIDEBAR -->
     <section id="sidebar" style="padding-left: -350px">
-{#        <a href="#" class="brand">#}
-            <a class="brand" href="{{ url("home") }}">
+        {#        <a href="#" class="brand">#}
+        <a class="brand" href="{{ url("home") }}">
 
             <i class='bx bxs-smile'></i>
             <span class="text">FetchBlog</span>
@@ -475,7 +475,7 @@
         <ul class="side-menu top">
             <li>
 
-                    <a href="{{ url("home") }}">
+                <a href="{{ url("home") }}">
                     <i class='bx bxs-dashboard'></i>
                     <span class="text">Accueil</span>
                 </a>
@@ -483,7 +483,7 @@
             <li class="active">
                 <a class="librefrank nav-link {{ app.current_route starts with 'post'? 'active' :''}}" href="{{ path("posts") }}" style="background: none">
 
-                <i class='bx bxs-shopping-bag-alt'></i>
+                    <i class='bx bxs-shopping-bag-alt'></i>
                     <span class="text">Posts</span>
                 </a>
             </li>
@@ -550,94 +550,23 @@
         <!-- NAVBAR -->
 
         <!-- MAIN -->
+        <!-- templates/post/index.html.twig -->
         <div class="main p-3">
             <div class="container">
                 <div class="row">
                     <div class="col-8">
                         <div id="posts-container">
                             {% for post in posts %}
-                                <div class="middle-panel">
-                                    <div class="post">
-                                        <div class="post-top">
-                                            <div class="dp">
-                                                <img src="{{ asset('images/' ~ post.user.image) }}" alt="">
-                                            </div>
-                                            <div class="post-info">
-                                                <p class="name">{{ post.user.username }}</p>
-                                            </div>
-                                            {% if post.isFavoritedByUser(app.user) %}
-                                                <i class="fa-solid fa-bookmark favorited" data-post-id="{{ post.id }}"></i>
-                                            {% else %}
-                                                <i class="fa-regular fa-bookmark favorite-btn" data-post-id="{{ post.id }}"></i>
-                                            {% endif %}
-                                        </div>
-                                        <div class="post-content">
-                                            {{ post.title }}
-                                            <img src="{{ asset('images/' ~ post.image) }}" alt="" class="post-image" data-post-id="{{ post.id }}">
-                                        </div>
-                                        <div class="post-bottom">
-                                            <div class="action like-action">
-                                                {% if post.isLikedByUser(app.user) %}
-                                                    <i class="fa-solid fa-thumbs-up liked" data-post-id="{{ post.id }}"></i>
-                                                {% else %}
-                                                    <i class="far fa-thumbs-up like-btn" data-post-id="{{ post.id }}"></i>
-                                                {% endif %}
-                                                <span>Like</span>
-                                            </div>
-                                            <div class="action">
-                                                <i class="far fa-comment"></i>
-                                                <span>Comment</span>
-                                            </div>
-                                            <div class="action">
-                                                <i class="fa fa-share"></i>
-                                                <span>Share</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% include 'post/_post.html.twig' with { post: post } %}
                             {% endfor %}
                         </div>
                     </div>
                     <div class="col-4" style="padding-left: 50px">
-                        <div class="con">
-                            <div class="profile">
-                                <div class="profile-header">
-                                    <img src="https://via.placeholder.com/50" alt="Profile Picture">
-                                    <div class="profile-info">
-                                        <p class="profile-name">Mon pseudo</p>
-                                        <p class="profile-details">Inscrit il y a 10 ans</p>
-                                    </div>
-                                </div>
-                                <div class="profile-description">
-                                    Oh right. I forgot about the battle. I just told you! You've killed me! You don't know how
-                                </div>
-                            </div>
-
-                            <div class="suggestions">
-                                <p class="suggestions-title">Suggestion</p>
-                                {% for post in posts %}
-                                    <div class="suggestion">
-                                        <img src="https://via.placeholder.com/73x73" style="border-radius: 20px" alt="John Doe">
-                                        <div class="suggestion-info">
-                                            <p class="suggestion-name">{{ post.user.username }}</p>
-                                            <p class="suggestion-details">15 amis mutuels</p>
-                                            <a href="#" class="add-friend">Ajouter en amis</a>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
+                        <!-- Profile and Suggestions Code -->
                     </div>
                 </div>
             </div>
         </div>
-        <!-- MAIN -->
-
-
-{#        modal#}
-
-
-        <!-- Modal HTML -->
         <!-- Modal HTML -->
         <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -700,46 +629,9 @@
 
                     if (query.length > 0) {
                         fetch(`/post/search?q=${query}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                postsContainer.innerHTML = '';
-
-                                data.forEach(post => {
-                                    const postElement = document.createElement('div');
-                                    postElement.className = 'middle-panel';
-                                    postElement.innerHTML = `
-                            <div class="post">
-                                <div class="post-top">
-                                    <div class="dp">
-                                        <img src="/images/${post.user_image}" alt="">
-                                    </div>
-                                    <div class="post-info">
-                                        <p class="name">${post.username}</p>
-                                    </div>
-                                    <i class="fa-solid fa-bookmark"></i>
-                                </div>
-                                <div class="post-content">
-                                    ${post.title}
-                                    <img src="/images/${post.image}" alt="" class="post-image" data-post-id="${post.id}">
-                                </div>
-                                <div class="post-bottom">
-                                    <div class="action">
-                                        <i class="far fa-thumbs-up"></i>
-                                        <span>Like</span>
-                                    </div>
-                                    <div class="action">
-                                        <i class="far fa-comment"></i>
-                                        <span>Comment</span>
-                                    </div>
-                                    <div class="action">
-                                        <i class="fa fa-share"></i>
-                                        <span>Share</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                                    postsContainer.appendChild(postElement);
-                                });
+                            .then(response => response.text())
+                            .then(html => {
+                                postsContainer.innerHTML = html;
                             });
                     } else {
                         // Recharger tous les posts si la recherche est vide
@@ -754,6 +646,7 @@
                     }
                 });
             });
+
 
         </script>
 
@@ -945,7 +838,6 @@
             }
         })</script>
 {% endblock %}
-
 
 
 

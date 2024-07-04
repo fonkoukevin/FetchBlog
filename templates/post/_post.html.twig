@@ -1,0 +1,40 @@
+<!-- templates/post/_post.html.twig -->
+<div class="middle-panel">
+    <div class="post">
+        <div class="post-top">
+            <div class="dp">
+                <img src="{{ asset('images/' ~ post.user.image) }}" alt="">
+            </div>
+            <div class="post-info">
+                <p class="name">{{ post.user.username }}</p>
+            </div>
+            {% if post.isFavoritedByUser(app.user) %}
+                <i class="fa-solid fa-bookmark favorited" data-post-id="{{ post.id }}"></i>
+            {% else %}
+                <i class="fa-regular fa-bookmark favorite-btn" data-post-id="{{ post.id }}"></i>
+            {% endif %}
+        </div>
+        <div class="post-content">
+            {{ post.title }}
+            <img src="{{ asset('images/' ~ post.image) }}" alt="" class="post-image" data-post-id="{{ post.id }}">
+        </div>
+        <div class="post-bottom">
+            <div class="action like-action">
+                {% if post.isLikedByUser(app.user) %}
+                    <i class="fa-solid fa-thumbs-up liked" data-post-id="{{ post.id }}"></i>
+                {% else %}
+                    <i class="far fa-thumbs-up like-btn" data-post-id="{{ post.id }}"></i>
+                {% endif %}
+                <span>Like</span>
+            </div>
+            <div class="action">
+                <i class="far fa-comment"></i>
+                <span>Comment</span>
+            </div>
+            <div class="action">
+                <i class="fa fa-share"></i>
+                <span>Share</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -30,23 +30,22 @@ class PostController extends AbstractController
     }
 
 
+// src/Controller/PostController.php
+
     #[Route('/post/search', name: 'post_search', methods: ['GET'])]
-    public function search(Request $request, PostRepository $repository): JsonResponse
+    public function search(Request $request, PostRepository $repository): Response
     {
         $query = $request->query->get('q');
         $posts = $repository->findByTitleOrUsername($query);
 
-        $results = [];
+        $html = '';
         foreach ($posts as $post) {
-            $results[] = [
-                'title' => $post->getTitle(),
-                'username' => $post->getUser()->getUsername(),
-                'image' => $post->getImage(),
-                'user_image' => $post->getUser()->getImage(),
-            ];
+            $html .= $this->renderView('post/_post.html.twig', [
+                'post' => $post,
+            ]);
         }
 
-        return new JsonResponse($results);
+        return new Response($html);
     }
 
     // Ajoutez cette route pour gérer les likes
