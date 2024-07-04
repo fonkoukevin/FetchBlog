@@ -303,4 +303,14 @@ class Post
 
         return $this;
     }
+
+    public function isFavoritedByUser(User $user): bool
+    {
+        foreach ($this->favorites as $favorite) {
+            if ($favorite->getUser() === $user) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

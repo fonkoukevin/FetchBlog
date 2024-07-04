@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Favorite;
 use App\Entity\Like;
 use App\Entity\Post;
 use App\Repository\LikeRepository;
@@ -70,4 +71,41 @@ class PostController extends AbstractController
 
         return new JsonResponse(['message' => 'Post liked successfully']);
     }
+
+    #[Route('/post/{id}/favorite', name: 'post_favorite', methods: ['POST'])]
+    public function favoritePost(Post $post, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+
+        // Vérifiez si l'utilisateur a déjà ajouté le post en favori
+        if ($post->isFavoritedByUser($user)) {
+            return new JsonResponse(['message' => 'You have already favorited this post.'], 400);
+        }
+
+        // Créez et enregistrez le favori
+        $favorite = new Favorite();
+        $favorite->setUser($user);
+        $favorite->setPost($post);
+        $favorite->setCreatedAt(new \DateTimeImmutable());
+
+        $em->persist($favorite);
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Post favorited successfully']);
+    }
+
+    #[Route('/post/{id}/details', name: 'post_details', methods: ['GET'])]
+    public function postDetails(Post $post): JsonResponse
+    {
+        $data = [
+            'title' => $post->getTitle(),
+            'content' => $post->getContent(),
+            'image' => $post->getImage(),
+            'username' => $post->getUser()->getUsername(),
+            'user_image' => $post->getUser()->getImage(),
+        ];
+
+        return new JsonResponse($data);
+    }
+
 }

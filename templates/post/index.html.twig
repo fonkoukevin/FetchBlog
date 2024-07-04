@@ -411,6 +411,53 @@
             opacity: 0.9; /* Rend le bouton visuellement désactivé */
         }
 
+        /*modal*/
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .modal-body .post-top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        .modal-body .post-top .dp img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .modal-body .post-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .modal-body .post-content {
+            width: 100%;
+        }
+
+        .modal-body .post-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+        }
+
+        .modal-body .post-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body .post-content p {
+            font-size: 1rem;
+            color: #666;
+        }
+
     </style>
 
 
@@ -518,11 +565,15 @@
                                             <div class="post-info">
                                                 <p class="name">{{ post.user.username }}</p>
                                             </div>
-                                            <i class="fa-solid fa-bookmark"></i>
+                                            {% if post.isFavoritedByUser(app.user) %}
+                                                <i class="fa-solid fa-bookmark favorited" data-post-id="{{ post.id }}"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-bookmark favorite-btn" data-post-id="{{ post.id }}"></i>
+                                            {% endif %}
                                         </div>
                                         <div class="post-content">
                                             {{ post.title }}
-                                            <img src="{{ asset('images/' ~ post.image) }}" alt="">
+                                            <img src="{{ asset('images/' ~ post.image) }}" alt="" class="post-image" data-post-id="{{ post.id }}">
                                         </div>
                                         <div class="post-bottom">
                                             <div class="action like-action">
@@ -582,92 +633,128 @@
         </div>
         <!-- MAIN -->
 
+
+{#        modal#}
+
+
+        <!-- Modal HTML -->
+        <!-- Modal HTML -->
+        <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="postModalLabel">Post Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="postDetails">
+                            <!-- Les détails du post seront chargés ici via AJAX -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', () => {
                 const searchInput = document.getElementById('search-input');
                 const postsContainer = document.getElementById('posts-container');
 
-                searchInput.addEventListener('input', function() {
-                    const query = searchInput.value;
+                // Fonction pour charger les détails d'un post
+                const loadPostDetails = (postId) => {
+                    fetch(`/post/${postId}/details`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const postDetails = document.getElementById('postDetails');
+                            postDetails.innerHTML = `
+                    <div class="post-top">
+                        <div class="dp">
+                            <img src="/images/${data.user_image}" alt="">
+                        </div>
+                        <div class="post-info">
+                            <p class="name">${data.username}</p>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h2>${data.title}</h2>
+                        <img src="/images/${data.image}" alt="">
+                        <p>${data.content}</p>
+                    </div>
+                `;
+                            const postModal = new bootstrap.Modal(document.getElementById('postModal'));
+                            postModal.show();
+                        });
+                };
+
+                // Délégation d'événements pour les détails des posts
+                postsContainer.addEventListener('click', event => {
+                    if (event.target.classList.contains('post-image')) {
+                        const postId = event.target.getAttribute('data-post-id');
+                        loadPostDetails(postId);
+                    }
+                });
+
+                // Écouteur pour la recherche
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.trim();
+
                     if (query.length > 0) {
                         fetch(`/post/search?q=${query}`)
                             .then(response => response.json())
                             .then(data => {
                                 postsContainer.innerHTML = '';
+
                                 data.forEach(post => {
                                     const postElement = document.createElement('div');
-                                    postElement.classList.add('middle-panel');
+                                    postElement.className = 'middle-panel';
                                     postElement.innerHTML = `
-                                <div class="post">
-                                    <div class="post-top">
-                                        <div class="dp">
-                                            <img src="/images/${post.user_image}" alt="">
-                                        </div>
-                                        <div class="post-info">
-                                            <p class="name">${post.username}</p>
-                                        </div>
-                                        <i class="fa-solid fa-bookmark"></i>
+                            <div class="post">
+                                <div class="post-top">
+                                    <div class="dp">
+                                        <img src="/images/${post.user_image}" alt="">
                                     </div>
-                                    <div class="post-content">
-                                        ${post.title}
-                                        <img src="/images/${post.image}" alt="">
+                                    <div class="post-info">
+                                        <p class="name">${post.username}</p>
                                     </div>
-                                    <div class="post-bottom">
-                                        <div class="action">
-                                            <i class="far fa-thumbs-up"></i>
-                                            <span>Like</span>
-                                        </div>
-                                        <div class="action">
-                                            <i class="far fa-comment"></i>
-                                            <span>Comment</span>
-                                        </div>
-                                        <div class="action">
-                                            <i class="fa fa-share"></i>
-                                            <span>Share</span>
-                                        </div>
+                                    <i class="fa-solid fa-bookmark"></i>
+                                </div>
+                                <div class="post-content">
+                                    ${post.title}
+                                    <img src="/images/${post.image}" alt="" class="post-image" data-post-id="${post.id}">
+                                </div>
+                                <div class="post-bottom">
+                                    <div class="action">
+                                        <i class="far fa-thumbs-up"></i>
+                                        <span>Like</span>
+                                    </div>
+                                    <div class="action">
+                                        <i class="far fa-comment"></i>
+                                        <span>Comment</span>
+                                    </div>
+                                    <div class="action">
+                                        <i class="fa fa-share"></i>
+                                        <span>Share</span>
                                     </div>
                                 </div>
-                            `;
+                            </div>
+                        `;
                                     postsContainer.appendChild(postElement);
                                 });
                             });
                     } else {
-                        postsContainer.innerHTML = `{% for post in posts %}
-                    <div class="middle-panel">
-                        <div class="post">
-                            <div class="post-top">
-                                <div class="dp">
-                                    <img src="{{ asset('images/' ~ post.user.image) }}" alt="">
-                                </div>
-                                <div class="post-info">
-                                    <p class="name">{{ post.user.username }}</p>
-                                </div>
-                                <i class="fa-solid fa-bookmark"></i>
-                            </div>
-                            <div class="post-content">
-                                {{ post.title }}
-                                <img src="{{ asset('images/' ~ post.image) }}" alt="">
-                            </div>
-                            <div class="post-bottom">
-                                <div class="action">
-                                    <i class="far fa-thumbs-up"></i>
-                                    <span>Like</span>
-                                </div>
-                                <div class="action">
-                                    <i class="far fa-comment"></i>
-                                    <span>Comment</span>
-                                </div>
-                                <div class="action">
-                                    <i class="fa fa-share"></i>
-                                    <span>Share</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}`;
+                        // Recharger tous les posts si la recherche est vide
+                        fetch('/post')
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newPostsContainer = doc.getElementById('posts-container');
+                                postsContainer.innerHTML = newPostsContainer.innerHTML;
+                            });
                     }
                 });
             });
+
         </script>
 
         <!-- MAIN -->
@@ -681,6 +768,76 @@
 
 
     <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.post-image').forEach(image => {
+                image.addEventListener('click', event => {
+                    const postId = event.target.getAttribute('data-post-id');
+                    fetch(`/post/${postId}/details`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const postDetails = document.getElementById('postDetails');
+                            postDetails.innerHTML = `
+                            <div class="post-top">
+                                <div class="dp">
+                                    <img src="/images/${data.user_image}" alt="">
+                                </div>
+                                <div class="post-info">
+                                    <p class="name">${data.username}</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                <h2>${data.title}</h2>
+                                <img src="/images/${data.image}" alt="">
+                                <p>${data.content}</p>
+                            </div>
+                        `;
+                            const postModal = new bootstrap.Modal(document.getElementById('postModal'));
+                            postModal.show();
+                        });
+                });
+            });
+        });
+
+        // favorite
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const favoriteButtons = document.querySelectorAll('.favorite-btn, .favorited');
+
+            favoriteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('favorited')) {
+                        alert('You have already favorited this post.');
+                        return;
+                    }
+
+                    const postId = this.getAttribute('data-post-id');
+                    fetch(`/post/${postId}/favorite`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-Token': '{{ csrf_token('favorite') }}' // Utiliser un token CSRF pour la sécurité
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message === 'Post favorited successfully') {
+                                this.classList.remove('fa-regular', 'fa-bookmark', 'favorite-btn');
+                                this.classList.add('fa-solid', 'fa-bookmark', 'favorited');
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            });
+        });
+
+
+        // like
         document.addEventListener('DOMContentLoaded', function() {
             const likeButtons = document.querySelectorAll('.like-btn, .liked');
 
@@ -717,75 +874,6 @@
         });
 
         // search
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('search-input');
-            const postsContainer = document.getElementById('posts-container');
-
-            searchInput.addEventListener('input', () => {
-                const query = searchInput.value;
-
-                if (query.length > 0) {
-                    fetch(`/post/search?q=${query}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            postsContainer.innerHTML = '';
-
-                            data.forEach(post => {
-                                const postElement = document.createElement('div');
-                                postElement.className = 'middle-panel';
-                                postElement.innerHTML = `
-                            <div class="post">
-                                <div class="post-top">
-                                    <div class="dp">
-                                        <img src="{{ asset('images/') }}${post.user_image}" alt="">
-                                    </div>
-                                    <div class="post-info">
-                                        <p class="name">${post.username}</p>
-                                    </div>
-                                    <i class="fa-solid fa-bookmark"></i>
-                                </div>
-                                <div class="post-content">
-                                    ${post.title}
-                                    <img src="{{ asset('images/') }}${post.image}" alt="">
-                                </div>
-                                <div class="post-bottom">
-                                    <div class="action">
-                                        <i class="far fa-thumbs-up"></i>
-                                        <span>Like</span>
-                                    </div>
-                                    <div class="action">
-                                        <i class="far fa-comment"></i>
-                                        <span>Comment</span>
-                                    </div>
-                                    <div class="action">
-                                        <i class="fa fa-share"></i>
-                                        <span>Share</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                                postsContainer.appendChild(postElement);
-                            });
-                        });
-                } else {
-                    // Reload all posts if the search input is cleared
-                    fetch(`/post`)
-                        .then(response => response.text())
-                        .then(html => {
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(html, 'text/html');
-                            const newPostsContainer = doc.getElementById('posts-container');
-                            postsContainer.innerHTML = newPostsContainer.innerHTML;
-                        });
-                }
-            });
-        });
-
-
-
-
-
 
 
 
