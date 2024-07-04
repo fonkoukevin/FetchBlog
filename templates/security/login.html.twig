@@ -3,37 +3,140 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        body{
+            font-family: 'Poppins', sans-serif;
+            background: #ececec;
+        }
+
+        /*------------ Login container ------------*/
+
+        .box-area{
+            width: 930px;
+        }
+
+        /*------------ Right box ------------*/
+
+        .right-box{
+            padding: 40px 30px 40px 40px;
+        }
+
+        /*------------ Custom Placeholder ------------*/
+
+        ::placeholder{
+            font-size: 16px;
+        }
+
+        .rounded-4{
+            border-radius: 20px;
+        }
+        .rounded-5{
+            border-radius: 30px;
+        }
+
+
+        /*------------ For small screens------------*/
+
+        @media only screen and (max-width: 768px){
+
+            .box-area{
+                margin: 0 10px;
+
+            }
+            .left-box{
+                height: 100px;
+                overflow: hidden;
+            }
+            .right-box{
+                padding: 20px;
+            }
+
+        }
+    </style>
+
+    <form method="post">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+
+
+            <div class="row border rounded-5 p-3 bg-white shadow box-area">
+
+                <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
+                     style="background: #2f5b74;">
+                    <div class="featured-image mb-3">
+                        <img src="{{ asset('images/claim.png') }}"  class="img-fluid" style="width: 285px;">
+                    </div>
+                    <p class="text-white fs-2"
+                       style="font-family: 'Courier New', Courier, monospace; font-weight: 600;">FetchBlog</p>
+
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    <small class="text-white text-wrap text-center"
+                           style="width: 17rem;font-family: 'Courier New', Courier, monospace;">Tech, Think, Transform</small>
+                </div>
+
+                {% if app.user %}
+                    <div class="mb-3">
+                        You are logged in as {{ app.user.userIdentifier }}, <a
+                                href="{{ path('app_logout') }}">Logout</a>
+                    </div>
+                {% endif %}
+
+
+                <div class="col-md-6 right-box">
+                    <div class="row align-items-center">
+                        <div class="header-text mb-4">
+                            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                            <p>We are happy to have you back.</p>
+                        </div>
+
+                        <div class="input-group mb-3">
+{#                            <label for="inputUsername">Username</label>#}
+                            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" placeholder="Username"
+                                   class="form-control form-control-lg bg-light fs-6" autocomplete="username" required
+                                   autofocus>
+                        </div>
+                        <div class="input-group mb-1">
+{#                            <label for="inputPassword">Password</label>#}
+                            <input type="password" name="password" id="inputPassword" placeholder="Password"
+                                   class="form-control form-control-lg bg-light fs-6" autocomplete="current-password"
+                                   required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token"
+                               value="{{ csrf_token('authenticate') }}"
+                        >
+
+                        <div class="input-group mb-5 d-flex justify-content-between">
+                            <div class="checkbox mb-3 form-check">
+                                <label class="form-check-label text-secondary">
+                                    <input type="checkbox" name="_remember_me" class="form-check-input"> Remember me
+                                </label>
+                            </div>
+                            <div class="forgot">
+                                <small><a href="#">Forgot Password?</a></small>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                        <button class="btn btn-lg btn-primary w-100 fs-6" type="submit">
+                            Sign in
+                        </button>
+                        </div>
+                        <div class="input-group mb-3">
+                            <button class="btn btn-lg btn-light w-100 fs-6"><img src="{{ asset('images/google.png') }}"  style="width:20px" class="me-2"><small>Sign In with Google</small></button>
+                        </div>
+                        <div class="row">
+                            <small>Don't have account? <a href="{{ path("app_register") }}" alt="">Créer un compte</a></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    {% endif %}
+    </form>
+{#    <a href="{{ path("app_register") }}" alt="">Créer un compte</a>#}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputUsername">Username</label>
-    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
-
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
-    </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
-    <a href="{{ path("app_register") }}" alt="">Créer un compte</a>
-tatus
 {% endblock %}

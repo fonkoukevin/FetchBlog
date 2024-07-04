@@ -1,19 +1,185 @@
+{#{% extends 'base.html.twig' %}#}
+
+{#{% block title %}Register{% endblock %}#}
+
+{#{% block body %}#}
+{#    <h1>Register</h1>#}
+
+{#    {{ form_errors(registrationForm) }}#}
+
+{#    {{ form_start(registrationForm) }}#}
+
+{#    {{ form_row(registrationForm.username) }}#}
+{#    {{ form_row(registrationForm.plainPassword, {#}
+{#        label: 'Password'#}
+{#    }) }}#}
+{#    {{ form_row(registrationForm.agreeTerms) }}#}
+
+{#    <button type="submit" class="btn">Register</button>#}
+
+{#    {{ form_end(registrationForm) }}#}
+{#{% endblock %}#}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
 
-    {{ form_errors(registrationForm) }}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ececec;
+        }
 
+        /*------------ Login container ------------*/
+
+        .box-area {
+            width: 930px;
+        }
+
+        /*------------ Right box ------------*/
+
+        .right-box {
+            padding: 40px 30px 40px 40px;
+        }
+
+        /*------------ Custom Placeholder ------------*/
+
+        ::placeholder {
+            font-size: 16px;
+        }
+
+        .rounded-4 {
+            border-radius: 20px;
+        }
+
+        .rounded-5 {
+            border-radius: 30px;
+        }
+
+
+        /*------------ For small screens------------*/
+
+        @media only screen and (max-width: 768px) {
+
+            .box-area {
+                margin: 0 10px;
+
+            }
+
+            .left-box {
+                height: 100px;
+                overflow: hidden;
+            }
+
+            .right-box {
+                padding: 20px;
+            }
+
+        }
+        .rr{
+            margin-left: -20px;
+        }
+
+    </style>
+
+    {#    <form method="post"> #}
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
 
-        <button type="submit" class="btn">Register</button>
+
+        <div class="row border rounded-5 p-3 bg-white shadow box-area">
+
+            <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
+                 style="background: #F1F1F3FF;">
+                <div class="featured-image mb-3">
+                    <img src="{{ asset('images/home1.jpg') }}" class="img-fluid" style="width: 285px; border-radius: 60px">
+                </div>
+                <p class="text-white fs-2"
+                   style="font-family: 'Courier New', Courier, monospace; font-weight: 600;">FetchBlog</p>
+
+                {#                    {% if error %} #}
+                {#                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div> #}
+                {#                    {% endif %} #}
+
+                <small class="text-white text-wrap text-center"
+                       style="width: 17rem;font-family: 'Courier New', Courier, monospace;">Tech, Think,
+                    Transform</small>
+            </div>
+
+            {#                {% if app.user %} #}
+            {#                    <div class="mb-3"> #}
+            {#                        You are logged in as {{ app.user.userIdentifier }}, <a #}
+            {#                                href="{{ path('app_logout') }}">Logout</a> #}
+            {#                    </div> #}
+            {#                {% endif %} #}
+
+
+            <div class="col-md-6 right-box">
+                <div class="row align-items-center">
+                    <div class="header-text mb-4">
+                        <h1 class="h3 mb-3 font-weight-normal">Register</h1>
+                        <p>We are happy to have you back.</p>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        {{ form_widget(registrationForm.username, {'attr': {'placeholder': 'Username', "class":"form-control form-control-lg bg-light fs-6"}}) }}
+                    </div>
+                    <div class="input-group mb-3">
+                        {{ form_widget(registrationForm.email, {'attr': {'placeholder': 'Email', "class": "form-control form-control-lg bg-light fs-6"}}) }}
+                    </div>
+                    <div class="input-group mb-1">
+                        {{ form_widget(registrationForm.plainPassword, {'attr': {'placeholder': 'Password', "class": "form-control form-control-lg bg-light fs-6"}}) }}
+                    </div>
+
+                    <input type="hidden" name="_csrf_token"
+                           value="{{ csrf_token('authenticate') }}"
+                    >
+
+                    <div class="input-group mb-5 d-flex justify-content-between rr">
+                        <div class="checkbox mb-3 form-check">
+                            <label class="form-check-label text-secondary cc">
+                                {{ form_row(registrationForm.agreeTerms, {'attr': {"class": "cc"}})  }}
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <button class="btn btn-lg btn-primary w-100 fs-6" type="submit">
+                            Register
+                        </button>
+                    </div>
+{#                    <div class="input-group mb-3">#}
+{#                        <button class="btn btn-lg btn-light w-100 fs-6"><img src="{{ asset('images/google.png') }}"#}
+{#                                                                             style="width:20px" class="me-2"><small>Sign#}
+{#                                In with Google</small></button>#}
+{#                    </div>#}
+                </div>
+            </div>
+        </div>
+    </div>
     {{ form_end(registrationForm) }}
+    {#    </form> #}
+    {#    <a href="{{ path("app_register") }}" alt="">Créer un compte</a> #}
+
 {% endblock %}
+
