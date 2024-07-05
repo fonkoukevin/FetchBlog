@@ -1,20 +1,715 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CommunauteController!{% endblock %}
+{% block title %}Hello communauteController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <style>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/projet/FetchBlog/src/Controller/CommunauteController.php</code></li>
-        <li>Your template at <code>C:/projet/FetchBlog/templates/communaute/index.html.twig</code></li>
-    </ul>
-</div>
+
+        /*post*/
+        .right-panel {
+
+        }
+
+        .container .left-panel, .container .right-panel {
+            /*position: sticky;*/
+            top: 70px;
+            /*margin-top: -600px;*/
+            /*margin-left: 600px;*/
+            width: 250px;
+            height: calc(100vh - 70px);
+        }
+
+        .container .left-panel ul {
+            padding: 10px 0px;
+        }
+
+        .container .left-panel ul li {
+            list-style: none;
+            display: flex;
+            padding: .7rem 1rem;
+            align-items: center;
+            transition: .3s;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container .left-panel ul li:hover {
+            background: #ddd;
+        }
+
+        .container .left-panel ul li > p {
+            margin-left: 10px;
+        }
+
+        .container .left-panel ul li > i {
+            font-size: 20px;
+            color: slateblue;
+        }
+
+        .container .left-panel ul li > i.fa-calendar-week {
+            color: tomato;
+        }
+
+        .container .left-panel ul li i.fa-briefcase {
+            color: green;
+        }
+
+        .container .left-panel ul li i.fa-star {
+            color: yellowgreen;
+        }
+
+        .container .left-panel ul li i.fa-hands-helping {
+            color: indianred;
+        }
+
+        .container .left-panel .footer-links {
+            padding: 5px 1rem;
+        }
+
+        .container .left-panel .footer-links a {
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .middle-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .middle-panel .story-section {
+            display: flex;
+            padding-left: -50px;
+        }
+
+        .middle-panel .story-section .story {
+            width: 120px;
+            height: 200px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            margin: 0px 5px;
+            box-shadow: 0 0 5px 5px #ddd;
+            background: #fff;
+        }
+
+        .middle-panel .story-section .story > img {
+            height: 100%;
+            transition: .3s ease-in;
+        }
+
+        .middle-panel .story-section .story:hover > img {
+            transform: scale(1.05);
+        }
+
+        .middle-panel .story-section .story .dp-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border: royalblue 4px solid;
+        }
+
+        .middle-panel .story-section .story .dp-container > img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .middle-panel .story-section .story .name {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            padding: 5px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .middle-panel .story-section .story.create .dp-image {
+            height: 80%;
+            overflow: hidden;
+        }
+
+        .middle-panel .story-section .story.create .dp-image img {
+            width: 100%;
+        }
+
+        .middle-panel .story-section .story.create .dp-container {
+            top: 70%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: grid;
+            place-items: center;
+            background: royalblue;
+            border: 4px solid #fff;
+        }
+
+        .middle-panel .story-section .story.create .dp-container i {
+            color: #fff;
+        }
+
+        .middle-panel .story-section .story.create .name {
+            color: #000;
+            font-size: 15px;
+            left: 10px;
+        }
+
+        .post {
+            width: 500px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px;
+            margin-right: -200px;
+            margin-left: -60px;
+
+        }
+
+        .post .post-top {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .post .post-top .dp {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .post .post-top .dp > img {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .post .post-top .post-info {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .post .post-top .post-info .name {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .post .post-top .post-info .time {
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .post .post-top i {
+            margin-left: auto;
+            cursor: pointer;
+        }
+
+        .post .post-top > input {
+            height: 40px;
+            padding: 5px 10px;
+            border-radius: 25px;
+            outline: none;
+            border: none;
+            flex: 1;
+            background: #eee;
+            margin-left: 10px;
+        }
+
+        .post .post-content {
+            font-size: 16px;
+            font-weight: normal;
+            padding: 10px;
+        }
+
+        .post .post-content > img {
+            width: 100%;
+            margin: 5px 0px;
+        }
+
+        .post .post-bottom {
+            box-shadow: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 5px 0px 5px;
+        }
+
+        .post .post-bottom .action {
+            padding: 10px;
+            border-radius: 10px;
+            transition: .3s ease-in;
+            cursor: pointer;
+        }
+
+        .post .post-bottom .action:hover {
+            background: #eee;
+        }
+
+        .post.create .post-bottom > .action {
+            color: #d74;
+        }
+
+        .container .right-panel {
+            padding: 1rem;
+        }
+
+        .right-panel .pages-section,
+        .right-panel .friends-section {
+            margin: 1rem 0px;
+        }
+
+        .right-panel .pages-section h4,
+        .right-panel .friends-section h4 {
+            margin-bottom: 10px;
+        }
+
+        .right-panel .pages-section .page,
+        .right-panel .friends-section .friend {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: .3s ease-in-out;
+            border-radius: 5px;
+            padding: 7px 10px;
+            color: #333;
+        }
+
+        .right-panel .pages-section .page:hover,
+        .right-panel .friends-section .friend:hover {
+            background: #ddd;
+        }
+
+        .right-panel .pages-section .page > .dp,
+        .right-panel .friends-section .friend > .dp {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .right-panel .pages-section .page > .dp > img,
+        .right-panel .friends-section .friend > .dp > img {
+            width: 100%;
+        }
+
+        .right-panel .pages-section .name, .right-panel .friends-section .name {
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+
+        /*suggestion*/
+
+        .con {
+
+            /*background-color: #ffffff;*/
+            /*border: 1px solid #ddd;*/
+            /*border-radius: 5px;*/
+            width: 300px;
+            padding: 20px;
+
+
+        }
+
+        .profile {
+            margin-bottom: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .profile-header img {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name {
+            font-weight: bold;
+        }
+
+        .profile-details {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .profile-description {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .suggestions {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 45px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            padding-left: 20px;
+        }
+
+        .suggestions-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .suggestion {
+
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .suggestion img {
+            margin-right: 10px;
+        }
+
+        .suggestion-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .suggestion-name {
+            font-weight: bold;
+        }
+
+        .suggestion-details {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .add-friend {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-friend::before {
+            content: '\1F465'; /* Unicode character for a person icon */
+            margin-right: 5px;
+        }
+
+        /* public/css/styles.css */
+
+        /* public/css/styles.css */
+
+        .users-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .user-card {
+            display: flex;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 300px; /* Ajuster la largeur selon vos besoins */
+            padding: 15px;
+        }
+
+        .user-info {
+            flex: 1; /* Permet à ce conteneur de grandir pour occuper l'espace restant */
+            padding-left: 15px; /* Espacement entre le texte et l'image */
+        }
+
+        .user-info h2 {
+            margin-bottom: 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .user-image {
+            width: 100px; /* Largeur de l'image */
+            height: 100px; /* Hauteur de l'image */
+            overflow: hidden; /* Cache les parties de l'image qui dépassent */
+        }
+
+        .user-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Assure que l'image couvre entièrement le conteneur */
+            border-radius: 50%; /* Rend l'image circulaire */
+        }
+
+        .subscribe-btn {
+            margin-top: auto; /* Aligner le bouton en bas du conteneur */
+            padding: 10px 20px;
+            background-color: #2f5b74;
+            color: #fff;
+            border: none;
+            border-radius: 26px;
+            cursor: pointer;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #416f88;
+        }
+
+
+
+    </style>
+
+
+
+
+
+    <!-- SIDEBAR -->
+    <section id="sidebar" style="padding-left: -350px">
+        {#        <a href="#" class="brand"> #}
+        <a class="brand" href="{{ url("home") }}">
+
+            <i class='bx bxs-smile'></i>
+            <span class="text">FetchBlog</span>
+        </a>
+        <ul class="side-menu top">
+            <li>
+
+                <a href="{{ url("home") }}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Accueil</span>
+                </a>
+            </li>
+            <li>
+                <a class="librefrank nav-link {{ app.current_route starts with 'post'? 'active' :'' }}"
+                   href="{{ path("posts") }}" style="background: none">
+
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Posts</span>
+                </a>
+            </li>
+            <li class="active">
+                <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :'' }}"
+                   href="{{ path("communaute") }}" style="background: none">
+
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Communauté</span>
+                </a>
+            </li>
+            <li>
+                <a class="librefrank nav-link {{ app.current_route starts with 'apropos'? 'active' :'' }}"
+                   href="{{ path("apropos") }}" style="background: none">
+
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">A propos</span>
+                </a>
+            </li>
+            <li>
+                <a class="librefrank nav-link {{ app.current_route starts with 'notification'? 'active' :'' }}"
+                   href="{{ path("notification") }}" style="background: none">
+
+                    <i class='bx bxs-group'></i>
+                    <span class="text">notification</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="side-menu">
+            <li>
+                <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :'' }}"
+                   href="{{ path("dashboard") }}" style="background: none">
+
+                    <i class='bx bxs-cog'></i>
+                    <span class="text">dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="logout">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+
+
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <a href="#" class="nav-link">Categories</a>
+            <form id="search-form" action="#" onsubmit="return false;">
+                <div class="form-input">
+                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off">
+                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
+            <a href="#" class="notification">
+                <i class='bx bxs-bell'></i>
+                <span class="num">8</span>
+            </a>
+            <a href="#" class="profile">
+                <img src="{{ asset('images/shoes.jpg') }}" alt="">
+            </a>
+        </nav>
+        <!-- NAVBAR -->
+        <!-- MAIN -->
+        <div class="main p-3">
+            {#            <div class="container"> #}
+
+            <h4 style="font-weight: bold">Communauté</h4>
+
+            <div id="users-list" class="users-list">
+                {% for user in users %}
+                    <div class="user-card">
+                        <div class="user-image">
+                            <img src="{{ asset('images/' ~ user.image) }}" alt="">
+                        </div>
+                        <div class="user-info">
+                            <h2>{{ user.username }}</h2>
+                            <p>{{ user.profession }}</p>
+                            <button class="subscribe-btn" data-user-id="{{ user.id }}">
+                                S'abonner
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+
+
+            <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelectorAll('.subscribe-btn').forEach(function(button) {
+                            button.addEventListener('click', function() {
+                                const userId = this.getAttribute('data-user-id');
+                                fetch(`/subscribe/${userId}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'Content-Type': 'application/json',
+                                    },
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.message) {
+                                            alert(data.message);
+                                            // You can update the button text or UI here based on the response
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            });
+                        });
+                    });
+                </script>
+
+
+
+
+            {#                {% endblock %} #}
+
+        </div>
+
+
+
+        <!-- MAIN -->
+    </section>
+
+
+
+
+    <!-- MAIN -->
+    </section>
+
+
+
+
+
+    <script>
+
+
+        const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+
+        allSideMenu.forEach(item => {
+            const li = item.parentElement;
+
+            item.addEventListener('click', function () {
+                allSideMenu.forEach(i => {
+                    i.parentElement.classList.remove('active');
+                })
+                li.classList.add('active');
+            })
+        });
+
+
+        // TOGGLE SIDEBAR
+        const menuBar = document.querySelector('#content nav .bx.bx-menu');
+        const sidebar = document.getElementById('sidebar');
+
+        menuBar.addEventListener('click', function () {
+            sidebar.classList.toggle('hide');
+        })
+
+
+        const searchButton = document.querySelector('#content nav form .form-input button');
+        const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
+        const searchForm = document.querySelector('#content nav form');
+
+        searchButton.addEventListener('click', function (e) {
+            if (window.innerWidth < 576) {
+                e.preventDefault();
+                searchForm.classList.toggle('show');
+                if (searchForm.classList.contains('show')) {
+                    searchButtonIcon.classList.replace('bx-search', 'bx-x');
+                } else {
+                    searchButtonIcon.classList.replace('bx-x', 'bx-search');
+                }
+            }
+        })
+
+
+        if (window.innerWidth < 768) {
+            sidebar.classList.add('hide');
+        } else if (window.innerWidth > 576) {
+            searchButtonIcon.classList.replace('bx-x', 'bx-search');
+            searchForm.classList.remove('show');
+        }
+
+
+        window.addEventListener('resize', function () {
+            if (this.innerWidth > 576) {
+                searchButtonIcon.classList.replace('bx-x', 'bx-search');
+                searchForm.classList.remove('show');
+            }
+        })
+
+
+        const switchMode = document.getElementById('switch-mode');
+
+        switchMode.addEventListener('change', function () {
+            if (this.checked) {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+        })</script>
 {% endblock %}
+
+
+

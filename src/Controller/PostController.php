@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Favorite;
 use App\Entity\Like;
 use App\Entity\Post;
+use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -105,6 +107,46 @@ class PostController extends AbstractController
         ];
 
         return new JsonResponse($data);
+    }
+
+
+
+    #[Route('/post/{id}/comments', name: 'post_comments', methods: ['GET', 'POST'])]
+    public function postComments(Post $post, Request $request, EntityManagerInterface $em, CommentRepository $commentRepository): JsonResponse
+    {
+        if ($request->isMethod('POST')) {
+            $data = json_decode($request->getContent(), true);
+            $content = $data['content'] ?? '';
+
+            if (empty($content)) {
+                return new JsonResponse(['error' => 'Content cannot be empty'], 400);
+            }
+
+            $comment = new Comment();
+            $comment->setContent($content);
+            $comment->setCreatedAt(new \DateTimeImmutable());
+            $comment->setUser($this->getUser());
+            $comment->setPost($post);
+
+            $em->persist($comment);
+            $em->flush();
+
+            return new JsonResponse(['message' => 'Comment added successfully']);
+        }
+
+        $comments = $commentRepository->findBy(['post' => $post], ['createdAt' => 'DESC']);
+        $commentsData = [];
+
+        foreach ($comments as $comment) {
+            $commentsData[] = [
+                'username' => $comment->getUser()->getUsername(),
+                'content' => $comment->getContent(),
+                'createdAt' => $comment->getCreatedAt()->format('Y-m-d H:i:s'),
+                'user_image' => $comment->getUser()->getImage() ?? 'default.png', // Utilisez une image par défaut si l'image de l'utilisateur n'est pas définie
+            ];
+        }
+
+        return new JsonResponse($commentsData);
     }
 
 }

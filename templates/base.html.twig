@@ -27,6 +27,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
             integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+
+
+
+{#    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>#}
     {% block stylesheets %}
     {% endblock %}
 
@@ -35,6 +42,7 @@
     {% endblock %}
 </head>
 <body>
+
 {% if show_navbar is defined and not show_navbar %}
     <style>
 
@@ -131,7 +139,7 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :'' }}"
-                                           href="{{ path("communautes") }}" style="background: none">Communauté</a>
+                                           href="{{ path("communaute") }}" style="background: none">Communauté</a>
 
                                     </li>
                                     <li class="nav-item">

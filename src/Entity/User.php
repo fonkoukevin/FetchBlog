@@ -36,9 +36,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'subscriber', orphanRemoval: true)]
+    private Collection $subscriptions;
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
+    #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'subscribedTo', orphanRemoval: true)]
+    private Collection $subscribers;
     /**
      * @var Collection<int, Post>
      */
@@ -72,6 +76,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'user')]
     private Collection $notifications;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profession = null;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -79,6 +86,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
         $this->notifications = new ArrayCollection();
+        $this->subscriptions = new ArrayCollection();
+        $this->subscribers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -324,6 +333,80 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($notification->getUser() === $this) {
                 $notification->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getProfession(): ?string
+    {
+        return $this->profession;
+    }
+
+    public function setProfession(?string $profession): static
+    {
+        $this->profession = $profession;
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @return Collection<int, Subscription>
+     */
+    public function getSubscriptions(): Collection
+    {
+        return $this->subscriptions;
+    }
+
+    public function addSubscription(Subscription $subscription): static
+    {
+        if (!$this->subscriptions->contains($subscription)) {
+            $this->subscriptions->add($subscription);
+            $subscription->setSubscriber($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscription(Subscription $subscription): static
+    {
+        if ($this->subscriptions->removeElement($subscription)) {
+            if ($subscription->getSubscriber() === $this) {
+                $subscription->setSubscriber(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subscription>
+     */
+    public function getSubscribers(): Collection
+    {
+        return $this->subscribers;
+    }
+
+    public function addSubscriber(Subscription $subscriber): static
+    {
+        if (!$this->subscribers->contains($subscriber)) {
+            $this->subscribers->add($subscriber);
+            $subscriber->setSubscribedTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscriber(Subscription $subscriber): static
+    {
+        if ($this->subscribers->removeElement($subscriber)) {
+            if ($subscriber->getSubscribedTo() === $this) {
+                $subscriber->setSubscribedTo(null);
             }
         }
 

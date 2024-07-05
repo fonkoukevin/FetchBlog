@@ -27,14 +27,18 @@
                 {% endif %}
                 <span>Like</span>
             </div>
-            <div class="action">
-                <i class="far fa-comment"></i>
+            <div class="action comment-action">
+                <i class="far fa-comment" data-post-id="{{ post.id }}" data-bs-toggle="modal" data-bs-target="#commentModal"></i>
                 <span>Comment</span>
             </div>
-            <div class="action">
+            <div class="action share-action">
                 <i class="fa fa-share"></i>
                 <span>Share</span>
             </div>
+        </div>
+        <div class="post-meta">
+            <span class="like-count" data-likes="{{ post.likes|length }}">{{ post.likes|length }} likes</span>,
+            <span class="comment-count" data-comments="{{ post.comments|length }}">{{ post.comments|length }} comments</span>
         </div>
     </div>
 </div>

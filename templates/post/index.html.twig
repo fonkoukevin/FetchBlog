@@ -458,6 +458,137 @@
             color: #666;
         }
 
+        /*comment*/
+        /* CSS pour les commentaires */
+        /* CSS spécifique pour la modal des commentaires */
+        /* CSS spécifique pour la modal des commentaires */
+        .comment-modal .modal-content {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .comment-modal .modal-header {
+            border-bottom: none;
+        }
+
+        .comment-modal .modal-title {
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .comment-modal .modal-body {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-top: 0;
+        }
+
+        .comment-modal #commentSection {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .comment {
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .comment .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .comment img {
+            border-radius: 50%;
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .comment .comment-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comment .comment-info strong {
+            font-weight: bold;
+        }
+
+        .comment .comment-info small {
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        .comment p {
+            margin: 0;
+        }
+
+        .comment-modal #commentContent {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            margin-bottom: 10px;
+            resize: none;
+        }
+
+        .comment-modal #submitComment {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .comment-modal #submitComment:hover {
+            background-color: #0056b3;
+        }
+
+        .comment-modal textarea, .comment-modal button {
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .comment-modal textarea:focus, .comment-modal button:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(128, 189, 255, 0.5);
+        }
+
+
+
+        .comment-top {
+            display: flex;
+            align-items: center;
+        }
+
+        .comment-user-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-meta {
+            margin-top: 10px;
+            font-weight: bold;
+            /*opacity: 0.7%;*/
+            color: #bcbcbc;
+            text-align: left; /* Assure que le texte est aligné à gauche */
+            padding-left: 15px; /* Ajoute un léger décalage pour correspondre au contenu du post */
+        }
+
+
+
     </style>
 
 
@@ -488,29 +619,33 @@
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <i class='bx bxs-doughnut-chart'></i>
-                    <span class="text">Analytics</span>
+                <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :''}}" href="{{ path("communaute") }}" style="background: none">
+
+                <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Communauté</span>
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Message</span>
+                <a class="librefrank nav-link {{ app.current_route starts with 'apropos'? 'active' :''}}" href="{{ path("apropos") }}" style="background: none">
+
+                <i class='bx bxs-message-dots'></i>
+                    <span class="text">A propos</span>
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <i class='bx bxs-group'></i>
-                    <span class="text">Team</span>
+                <a class="librefrank nav-link {{ app.current_route starts with 'notification'? 'active' :''}}" href="{{ path("notification") }}" style="background: none">
+
+                <i class='bx bxs-group'></i>
+                    <span class="text">notification</span>
                 </a>
             </li>
         </ul>
         <ul class="side-menu">
             <li>
-                <a href="#">
-                    <i class='bx bxs-cog'></i>
-                    <span class="text">Settings</span>
+                <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :''}}" href="{{ path("dashboard") }}" style="background: none">
+
+                <i class='bx bxs-cog'></i>
+                    <span class="text">dashboard</span>
                 </a>
             </li>
             <li>
@@ -550,7 +685,7 @@
         <!-- NAVBAR -->
 
         <!-- MAIN -->
-        <!-- templates/post/index.html.twig -->
+        <!-- MAIN -->
         <div class="main p-3">
             <div class="container">
                 <div class="row">
@@ -563,11 +698,39 @@
                     </div>
                     <div class="col-4" style="padding-left: 50px">
                         <!-- Profile and Suggestions Code -->
+                        <div class="con">
+                            <div class="profile">
+                                <div class="profile-header">
+                                    <img src="images/logo.png" alt="Profile Picture" style="border-radius: 30px; width: 40px">
+                                    <div class="profile-info">
+                                        <p class="profile-name">FetchBlog</p>
+                                    </div>
+                                </div>
+                                <div class="profile-description">
+                                    Trouver des articles de blog et des suggestions pour passer un bon moment.
+                                </div>
+                            </div>
+
+                            <div class="suggestions">
+                                <p class="suggestions-title">Suggestion</p>
+                                {% for post in posts %}
+                                    <div class="suggestion">
+                                        <img src="https://via.placeholder.com/73x73" style="border-radius: 20px" alt="John Doe">
+                                        <div class="suggestion-info">
+                                            <p class="suggestion-name">{{ post.user.username }}</p>
+                                            <p class="suggestion-details">15 amis mutuels</p>
+                                            <a href="#" class="add-friend">Ajouter en amis</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal HTML -->
+
+        <!-- Modal HTML for Post Details -->
         <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -584,113 +747,46 @@
             </div>
         </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const searchInput = document.getElementById('search-input');
-                const postsContainer = document.getElementById('posts-container');
-
-                // Fonction pour charger les détails d'un post
-                const loadPostDetails = (postId) => {
-                    fetch(`/post/${postId}/details`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const postDetails = document.getElementById('postDetails');
-                            postDetails.innerHTML = `
-                    <div class="post-top">
-                        <div class="dp">
-                            <img src="/images/${data.user_image}" alt="">
-                        </div>
-                        <div class="post-info">
-                            <p class="name">${data.username}</p>
-                        </div>
+        <!-- Modal HTML for Comments -->
+        <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="post-content">
-                        <h2>${data.title}</h2>
-                        <img src="/images/${data.image}" alt="">
-                        <p>${data.content}</p>
+                    <div class="modal-body">
+                        <div id="commentSection">
+                            <!-- Les commentaires seront chargés ici via AJAX -->
+                        </div>
+                        <textarea id="commentContent" class="form-control" placeholder="Write your comment here..."></textarea>
+                        <button id="submitComment" class="btn btn-primary mt-2">Submit</button>
                     </div>
-                `;
-                            const postModal = new bootstrap.Modal(document.getElementById('postModal'));
-                            postModal.show();
-                        });
-                };
+                </div>
+            </div>
+        </div>
 
-                // Délégation d'événements pour les détails des posts
-                postsContainer.addEventListener('click', event => {
-                    if (event.target.classList.contains('post-image')) {
-                        const postId = event.target.getAttribute('data-post-id');
-                        loadPostDetails(postId);
-                    }
-                });
-
-                // Écouteur pour la recherche
-                searchInput.addEventListener('input', () => {
-                    const query = searchInput.value.trim();
-
-                    if (query.length > 0) {
-                        fetch(`/post/search?q=${query}`)
-                            .then(response => response.text())
-                            .then(html => {
-                                postsContainer.innerHTML = html;
-                            });
-                    } else {
-                        // Recharger tous les posts si la recherche est vide
-                        fetch('/post')
-                            .then(response => response.text())
-                            .then(html => {
-                                const parser = new DOMParser();
-                                const doc = parser.parseFromString(html, 'text/html');
-                                const newPostsContainer = doc.getElementById('posts-container');
-                                postsContainer.innerHTML = newPostsContainer.innerHTML;
-                            });
-                    }
-                });
-            });
-
-
-        </script>
 
         <!-- MAIN -->
+    </section>
+
+
+
+
+    <!-- MAIN -->
     </section>
     <!-- CONTENT -->
 
 
 
+    <script src="{{ asset('js/post.js') }}"></script>
 
 
 
 
     <script>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.post-image').forEach(image => {
-                image.addEventListener('click', event => {
-                    const postId = event.target.getAttribute('data-post-id');
-                    fetch(`/post/${postId}/details`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const postDetails = document.getElementById('postDetails');
-                            postDetails.innerHTML = `
-                            <div class="post-top">
-                                <div class="dp">
-                                    <img src="/images/${data.user_image}" alt="">
-                                </div>
-                                <div class="post-info">
-                                    <p class="name">${data.username}</p>
-                                </div>
-                            </div>
-                            <div class="post-content">
-                                <h2>${data.title}</h2>
-                                <img src="/images/${data.image}" alt="">
-                                <p>${data.content}</p>
-                            </div>
-                        `;
-                            const postModal = new bootstrap.Modal(document.getElementById('postModal'));
-                            postModal.show();
-                        });
-                });
-            });
-        });
+
 
         // favorite
 
