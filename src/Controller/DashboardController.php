@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\PostType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,6 +74,82 @@ class DashboardController extends AbstractController
             'likeCount' => $likeCount,
         ]);
     }
+
+    #[Route('/dashboard/favorites', name: 'dashboard_favorites', methods: ['GET'])]
+    public function getFavorites(): JsonResponse
+    {
+        $user = $this->getUser();
+        $favorites = $user->getFavorites();
+
+        $favoritesData = [];
+        foreach ($favorites as $favorite) {
+            $favoritesData[] = [
+                'title' => $favorite->getPost()->getTitle(),
+                'content' => $favorite->getPost()->getContent(),
+                'image' => $favorite->getPost()->getImage(),
+                'username' => $favorite->getPost()->getUser()->getUsername(),
+            ];
+        }
+
+        return new JsonResponse($favoritesData);
+    }
+
+    #[Route('/dashboard/posts', name: 'dashboard_posts', methods: ['GET'])]
+    public function getPosts(): JsonResponse
+    {
+        $user = $this->getUser();
+        $posts = $user->getPosts();
+
+        $postsData = [];
+        foreach ($posts as $post) {
+            $postsData[] = [
+                'title' => $post->getTitle(),
+                'content' => $post->getContent(),
+                'image' => $post->getImage(),
+                'username' => $post->getUser()->getUsername(),
+            ];
+        }
+
+        return new JsonResponse($postsData);
+    }
+
+    #[Route('/dashboard/subscriptions', name: 'dashboard_subscriptions', methods: ['GET'])]
+    public function getSubscriptions(EntityManagerInterface $entityManager): JsonResponse
+    {
+        $user = $this->getUser();
+
+        // Abonnements (utilisateurs auxquels l'utilisateur est abonné)
+        $subscriptions = $entityManager->getRepository(Subscription::class)
+            ->findBy(['subscriber' => $user]);
+
+        $subscriptionsData = [];
+        foreach ($subscriptions as $subscription) {
+            $subscribedTo = $subscription->getSubscribedTo();
+            $subscriptionsData[] = [
+                'username' => $subscribedTo->getUsername(),
+                'user_image' => $subscribedTo->getImage(),
+            ];
+        }
+
+        // Abonnés (utilisateurs qui sont abonnés à l'utilisateur)
+        $subscribers = $entityManager->getRepository(Subscription::class)
+            ->findBy(['subscribedTo' => $user]);
+
+        $subscribersData = [];
+        foreach ($subscribers as $subscriber) {
+            $subscriberUser = $subscriber->getSubscriber();
+            $subscribersData[] = [
+                'username' => $subscriberUser->getUsername(),
+                'user_image' => $subscriberUser->getImage(),
+            ];
+        }
+
+        return new JsonResponse([
+            'subscriptions' => $subscriptionsData,
+            'subscribers' => $subscribersData,
+        ]);
+    }
+
 }
 
 

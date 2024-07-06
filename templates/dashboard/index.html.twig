@@ -558,6 +558,29 @@
             color: #ccc;
         }
 
+
+        /*link et genere*/
+        /* Style for the navigation links */
+        .nav-links {
+            display: flex;
+            justify-content: space-around; /* Distributes the links evenly */
+            border-bottom: 1px solid #ccc; /* Adds a light gray line below the links */
+            padding-bottom: 10px; /* Adds some padding below the links */
+            margin-bottom: 20px; /* Adds some margin below the links to separate from the content */
+            margin-top: 25px;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+            text-decoration: none; /* Removes the underline from the links */
+            color: #333; /* Sets the text color of the links */
+            padding: 10px; /* Adds some padding around the links */
+        }
+
+        .nav-links a:hover {
+            color: #007BFF; /* Changes the color of the links on hover */
+        }
+
     </style>
 
 
@@ -728,29 +751,27 @@
             </div>
 
 
-
             {# dashboard/index.html.twig #}
 
 
-            <nav>
-                <ul>
-{#                    <li><a href="{{ path('favorites') }}">Favoris</a></li>#}
-{#                    <li><a href="{{ path('network') }}">Réseau</a></li>#}
-                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#addPostModal">Ajouter Post</a></li>
-{#                    <li><a href="{{ path('my_posts') }}">Mes Posts</a></li>#}
-                </ul>
-            </nav>
+            <div class="nav-links">
+                <li><a href="#" id="loadFavorites">Favoris</a></li>
+                <li><a href="#" id="loadPosts">Posts</a></li>
+                <li><a href="#" id="loadNetwork">Réseau</a></li>
+                <li><a href="#" data-bs-toggle="modal" data-bs-target="#addPostModal">Ajouter Post</a></li>
+
+            </div>
+
+
             <div class="modal fade" id="addPostModal">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-
                         <!-- Modal Header -->
                         <div class="modal-header">
                             <h4 class="modal-title">Ajouter un nouveau post</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: white;color: white"></button>
-
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                    style="background-color: white;color: white"></button>
                         </div>
-
                         <!-- Modal Body -->
                         <div class="modal-body">
                             {{ form_start(postForm, {'attr': {'class': 'post-form'}}) }}
@@ -780,51 +801,138 @@
                                 {{ form_errors(postForm.status) }}
                             </div>
                             <div class="form-group text-right">
-                                <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+                                <button type="submit"
+                                        class="btn btn-primary">{{ button_label|default('Save') }}</button>
                             </div>
                             {{ form_end(postForm) }}
                         </div>
-
                     </div>
                 </div>
             </div>
-        </div>
+            <div id="content">
+                <div id="favoritesContainer"></div>
+                <div id="postsContainer"></div>
+                <div id="networkContainer"></div>
+            </div>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script>
 
 
+                $(document).ready(function () {
+                    $('#loadFavorites').on('click', function (e) {
+                        e.preventDefault();
+                        $('#postsContainer').empty();
+                        $('#networkContainer').empty();
+                        $.ajax({
+                            url: '{{ path('dashboard_favorites') }}',
+                            method: 'GET',
+                            success: function (data) {
+                                $('#favoritesContainer').empty();
+                                if (data.length > 0) {
+                                    $.each(data, function (index, favorite) {
+                                        $('#favoritesContainer').append(
+                                            '<div class="favorite-post">' +
+                                            '<h3>' + favorite.title + '</h3>' +
+                                            '<p>' + favorite.content + '</p>' +
+                                            '<img src="/images/' + favorite.image + '" alt="' + favorite.title + '">' +
+                                            '<p>By ' + favorite.username + '</p>' +
+                                            '</div>'
+                                        );
+                                    });
+                                } else {
+                                    $('#favoritesContainer').append('<p>No favorites found.</p>');
+                                }
+                            },
+                            error: function () {
+                                $('#favoritesContainer').append('<p>Failed to load favorites.</p>');
+                            }
+                        });
+                    });
+
+                    $('#loadPosts').on('click', function (e) {
+                        e.preventDefault();
+                        $('#favoritesContainer').empty();
+                        $('#networkContainer').empty();
+                        $.ajax({
+                            url: '{{ path('dashboard_posts') }}',
+                            method: 'GET',
+                            success: function (data) {
+                                $('#postsContainer').empty();
+                                if (data.length > 0) {
+                                    $.each(data, function (index, post) {
+                                        $('#postsContainer').append(
+                                            '<div class="user-post">' +
+                                            '<h3>' + post.title + '</h3>' +
+                                            '<p>' + post.content + '</p>' +
+                                            '<img src="/images/' + post.image + '" alt="' + post.title + '">' +
+                                            '<p>By ' + post.username + '</p>' +
+                                            '</div>'
+                                        );
+                                    });
+                                } else {
+                                    $('#postsContainer').append('<p>No posts found.</p>');
+                                }
+                            },
+                            error: function () {
+                                $('#postsContainer').append('<p>Failed to load posts.</p>');
+                            }
+                        });
+                    });
+
+                    $('#loadNetwork').on('click', function (e) {
+                        e.preventDefault();
+                        $('#favoritesContainer').empty();
+                        $('#postsContainer').empty();
+                        $.ajax({
+                            url: '{{ path('dashboard_subscriptions') }}',
+                            method: 'GET',
+                            success: function (data) {
+                                $('#networkContainer').empty();
+
+                                if (data.subscriptions.length > 0) {
+                                    $('#networkContainer').append('<h3>Subscriptions</h3>');
+                                    $.each(data.subscriptions, function (index, subscription) {
+                                        $('#networkContainer').append(
+                                            '<div class="network-user">' +
+                                            '<p>' + subscription.username + '</p>' +
+                                            '<img src="/images/' + subscription.user_image + '" alt="' + subscription.username + '">' +
+                                            '</div>'
+                                        );
+                                    });
+                                } else {
+                                    $('#networkContainer').append('<p>No subscriptions found.</p>');
+                                }
+
+                                if (data.subscribers.length > 0) {
+                                    $('#networkContainer').append('<h3>Subscribers</h3>');
+                                    $.each(data.subscribers, function (index, subscriber) {
+                                        $('#networkContainer').append(
+                                            '<div class="network-user">' +
+                                            '<p>' + subscriber.username + '</p>' +
+                                            '<img src="/images/' + subscriber.user_image + '" alt="' + subscriber.username + '">' +
+                                            '</div>'
+                                        );
+                                    });
+                                } else {
+                                    $('#networkContainer').append('<p>No subscribers found.</p>');
+                                }
+                            },
+                            error: function () {
+                                $('#networkContainer').append('<p>Failed to load network information.</p>');
+                            }
+                        });
+                    });
+                });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            </script>
 
 
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     const subscribeButton = document.getElementById('subscribe-btn');
-                    subscribeButton.addEventListener('click', function() {
+                    subscribeButton.addEventListener('click', function () {
                         const userId = this.getAttribute('data-user-id');
                         fetch(`/subscribe/${userId}`, {
                             method: 'POST',
@@ -845,7 +953,7 @@
                 });
             </script>
         </div>
-            <!-- MAIN -->
+        <!-- MAIN -->
     </section>
 
 
