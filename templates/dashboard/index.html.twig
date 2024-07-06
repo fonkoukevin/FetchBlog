@@ -407,8 +407,156 @@
 
         /* public/css/styles.css */
 
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-image img {
+            border-radius: 20%;
+            width: 130px;
+            height: 130px;
+            margin-right: 20px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .subscribe-button {
+            margin-left: auto;
+        }
+
+        .subscribe-button button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2f5b74;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .subscribe-button button:hover {
+            background-color: #294859;
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 60px;
+        }
+
+        .stat-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon {
+            margin-right: 10px;
+            font-size: 40px;
+            color: #373737;
+        }
+
+        .stat-info {
+            text-align: left;
+        }
+
+        .stat-info p:first-child {
+            font-size: 18px;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .stat-info p:last-child {
+            font-size: 24px;
+            font-weight: bold;
+            color: #343a40;
+            margin: 0;
+        }
+
+        /*modal*/
+        /* public/css/styles.css */
+
+        /* Styles for the modal */
+        .modal-header {
+            background-color: #2f5b74;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: bold;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control,
+        .form-control-file {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus,
+        .form-control-file:focus {
+            border-color: #2f5b74;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .btn-primary {
+            background-color: #2f5b74;
+            border-color: #2f5b74;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #274351;
+            border-color: #213d4a;
+        }
+
+        .close {
+            color: white;
+            opacity: 1;
+            text-shadow: none;
+        }
+
+        .close:hover {
+            color: #ccc;
+        }
 
     </style>
 
@@ -440,7 +588,7 @@
                     <span class="text">Posts</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :'' }}"
                    href="{{ path("communaute") }}" style="background: none">
 
@@ -466,7 +614,7 @@
             </li>
         </ul>
         <ul class="side-menu">
-            <li>
+            <li class="active">
                 <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :'' }}"
                    href="{{ path("dashboard") }}" style="background: none">
 
@@ -491,12 +639,12 @@
         <!-- NAVBAR -->
         <nav>
             <i class='bx bx-menu'></i>
-            {#            <a href="#" class="nav-link">Categories</a>#}
+            {#            <a href="#" class="nav-link">Categories</a> #}
             <form id="search-form" action="#" onsubmit="return false;">
-{#                <div class="form-input">#}
-{#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off">#}
-{#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button>#}
-{#                </div>#}
+                {#                <div class="form-input"> #}
+                {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
+                {#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button> #}
+                {#                </div> #}
                 <h4>Dashboard</h4>
             </form>
             <input type="checkbox" id="switch-mode" hidden>
@@ -514,22 +662,190 @@
         <div class="main p-3">
             {#            <div class="container"> #}
 
-{#            <h4 style="font-weight: bold">Communauté</h4>#}
+            {#            <h4 style="font-weight: bold">Communauté</h4> #}
 
 
 
+            {# dashboard/index.html.twig #}
+
+            <div class="dashboard-container">
+                <div class="user-header">
+                    <div class="user-info">
+                        <div class="user-image">
+                            {% if user.image %}
+                                <img src="{{ asset('images/' ~ user.image) }}" alt="User Image">
+                            {% else %}
+                                <img src="{{ asset('images/default.png') }}" alt="Default Image">
+                            {% endif %}
+                        </div>
+                        <div class="user-details">
+                            <h2>{{ user.username }}</h2>
+                            <p>{{ user.profession }}</p>
+                        </div>
+                    </div>
+                    <div class="subscribe-button">
+                        <button id="subscribe-btn" data-user-id="{{ user.id }}">S'abonner</button>
+                    </div>
+                </div>
+                <div class="user-stats">
+                    <div class="stat-card">
+                        <div class="icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p>Abonnés</p>
+                            <p>{{ user.subscribers|length }}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p>Likes</p>
+                            <p>{{ likeCount }}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p>Favoris</p>
+                            <p>{{ favoriteCount }}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">
+                            <i class="fa-solid fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p>Posts</p>
+                            <p>{{ user.posts|length }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
 
+            {# dashboard/index.html.twig #}
 
 
+            <nav>
+                <ul>
+{#                    <li><a href="{{ path('favorites') }}">Favoris</a></li>#}
+{#                    <li><a href="{{ path('network') }}">Réseau</a></li>#}
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#addPostModal">Ajouter Post</a></li>
+{#                    <li><a href="{{ path('my_posts') }}">Mes Posts</a></li>#}
+                </ul>
+            </nav>
+            <div class="modal fade" id="addPostModal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
 
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Ajouter un nouveau post</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: white;color: white"></button>
 
+                        </div>
+
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            {{ form_start(postForm, {'attr': {'class': 'post-form'}}) }}
+                            <div class="form-group">
+                                {{ form_label(postForm.title) }}
+                                {{ form_widget(postForm.title, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(postForm.title) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(postForm.slug) }}
+                                {{ form_widget(postForm.slug, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(postForm.slug) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(postForm.content) }}
+                                {{ form_widget(postForm.content, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(postForm.content) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(postForm.image) }}
+                                {{ form_widget(postForm.image, {'attr': {'class': 'form-control-file'}}) }}
+                                {{ form_errors(postForm.image) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(postForm.status) }}
+                                {{ form_widget(postForm.status, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(postForm.status) }}
+                            </div>
+                            <div class="form-group text-right">
+                                <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+                            </div>
+                            {{ form_end(postForm) }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
 
 
-        <!-- MAIN -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const subscribeButton = document.getElementById('subscribe-btn');
+                    subscribeButton.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-user-id');
+                        fetch(`/subscribe/${userId}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.message) {
+                                    alert(data.message);
+                                    // You can update the button text or UI here based on the response
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    });
+                });
+            </script>
+        </div>
+            <!-- MAIN -->
     </section>
 
 

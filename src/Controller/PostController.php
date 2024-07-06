@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Favorite;
 use App\Entity\Like;
 use App\Entity\Post;
+use App\Form\PostType;
 use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\PostRepository;
@@ -149,4 +150,50 @@ class PostController extends AbstractController
         return new JsonResponse($commentsData);
     }
 
+
+
+
+
+    #[Route('/post/new', name: 'new_post', methods: ['POST'])]
+    public function newPost(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $post = new Post();
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $post->setUser($this->getUser());
+            $post->setCreatedAt(new \DateTimeImmutable());
+            $post->setUpdatedAt(new \DateTimeImmutable());
+            $entityManager->persist($post);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('user_posts');
+        }
+
+        return $this->render('post/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    #[Route('/post/favorites', name: 'favorite_posts')]
+    public function favoritePosts(): Response
+    {
+        $user = $this->getUser();
+        $favorites = $user->getFavorites();
+
+        return $this->render('post/favorites.html.twig', [
+            'favorites' => $favorites,
+        ]);
+    }
+
+    #[Route('/post/user', name: 'user_posts')]
+    public function userPosts(PostRepository $postRepository): Response
+    {
+        $user = $this->getUser();
+        $posts = $postRepository->findBy(['user' => $user]);
+
+        return $this->render('post/user_posts.html.twig', [
+            'posts' => $posts,
+        ]);
+    }
 }

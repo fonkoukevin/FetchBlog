@@ -1,0 +1,23 @@
+{# user/network.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Réseau</h1>
+    <div class="subscriptions">
+        <h2>Abonnements</h2>
+        <ul>
+            {% for subscription in subscriptions %}
+                <li>{{ subscription.subscribedTo.username }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="subscribers">
+        <h2>Abonnés</h2>
+        <ul>
+            {% for subscriber in subscribers %}
+                <li>{{ subscriber.subscriber.username }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

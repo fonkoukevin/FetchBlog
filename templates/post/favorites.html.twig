@@ -1,0 +1,15 @@
+{# post/favorites.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Favoris</h1>
+    <div class="posts">
+        {% for favorite in favorites %}
+            <div class="post">
+                <h2>{{ favorite.post.title }}</h2>
+                <p>{{ favorite.post.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

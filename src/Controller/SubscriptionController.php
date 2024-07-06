@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SubscriptionController extends AbstractController
@@ -51,4 +52,19 @@ class SubscriptionController extends AbstractController
 
         return new JsonResponse(['message' => 'You are not subscribed to this user.'], JsonResponse::HTTP_BAD_REQUEST);
     }
+
+    #[Route('/user/network', name: 'user_network')]
+    public function network(): Response
+    {
+        $user = $this->getUser();
+        $subscriptions = $user->getSubscriptions();
+        $subscribers = $user->getSubscribers();
+
+        return $this->render('user/network.html.twig', [
+            'subscriptions' => $subscriptions,
+            'subscribers' => $subscribers,
+        ]);
+    }
+
+
 }
