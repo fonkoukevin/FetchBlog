@@ -13,6 +13,7 @@ class DashboardController extends AbstractController
     {
         return $this->render('dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
+            'show_navbar' => True, // Indique que la barre de navigation ne doit pas être affichée
         ]);
     }
 }
