@@ -6,10 +6,13 @@ use App\Entity\Comment;
 use App\Entity\Favorite;
 use App\Entity\Like;
 use App\Entity\Post;
+use App\Entity\Subscription;
+use App\Entity\User;
 use App\Form\PostType;
 use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\PostRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,19 +24,52 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class PostController extends AbstractController
 {
+    // src/Controller/PostController.php
     #[Route('/post', name: 'posts')]
-    public function index(PostRepository $repository): Response
+    public function index(PostRepository $repository, UserRepository $userRepository): Response
     {
         $posts = $repository->findAll();
+        $topUsers = $userRepository->findTopUsersBySubscribers();
+
         return $this->render('post/index.html.twig', [
-            'controller_name' => 'PostController',
             'posts' => $posts,
-            'show_navbar' => True, // Indique que la barre de navigation ne doit pas être affichée
+            'topUsers' => $topUsers,
+            'show_navbar' => true,
         ]);
     }
 
 
-// src/Controller/PostController.php
+    #[Route('/add-friend/{id}', name: 'add_friend', methods: ['POST'])]
+    public function addFriend(User $user, EntityManagerInterface $em): Response
+    {
+        $currentUser = $this->getUser();
+
+        if ($user === $currentUser) {
+            return $this->redirectToRoute('posts');
+        }
+
+        // Vérifiez si l'abonnement existe déjà
+        $existingSubscription = $em->getRepository(Subscription::class)->findOneBy([
+            'subscriber' => $currentUser,
+            'subscribedTo' => $user
+        ]);
+
+        if ($existingSubscription) {
+            return $this->redirectToRoute('posts');
+        }
+
+        $subscription = new Subscription();
+        $subscription->setSubscriber($currentUser);
+        $subscription->setSubscribedTo($user);
+        $subscription->setCreatedAt(new \DateTimeImmutable());
+
+        $em->persist($subscription);
+        $em->flush();
+
+        return $this->redirectToRoute('posts');
+    }
+
+    // src/Controller/PostController.php
 
     #[Route('/post/search', name: 'post_search', methods: ['GET'])]
     public function search(Request $request, PostRepository $repository): Response
@@ -53,7 +89,7 @@ class PostController extends AbstractController
 
     // Ajoutez cette route pour gérer les likes
     #[Route('/post/{id}/like', name: 'post_like', methods: ['POST'])]
-    public function likePost(Post $post, EntityManagerInterface $em): JsonResponse
+    public function likePost(Post $post, EntityManagerInterface $em, LikeRepository $likeRepository): JsonResponse
     {
         $user = $this->getUser();
 
@@ -71,8 +107,32 @@ class PostController extends AbstractController
         $em->persist($like);
         $em->flush();
 
-        return new JsonResponse(['message' => 'Post liked successfully']);
+        // Compter le nombre de likes
+        $likeCount = $likeRepository->count(['post' => $post]);
+
+        return new JsonResponse(['message' => 'Post liked successfully', 'likeCount' => $likeCount]);
     }
+    #[Route('/post/{id}/unlike', name: 'post_unlike', methods: ['POST'])]
+    public function unlikePost(Post $post, EntityManagerInterface $em, LikeRepository $likeRepository): JsonResponse
+    {
+        $user = $this->getUser();
+
+        // Trouvez le like de l'utilisateur pour ce post
+        $like = $likeRepository->findOneBy(['post' => $post, 'user' => $user]);
+
+        if (!$like) {
+            return new JsonResponse(['message' => 'You have not liked this post.'], 400);
+        }
+
+        $em->remove($like);
+        $em->flush();
+
+        // Compter le nombre de likes
+        $likeCount = $likeRepository->count(['post' => $post]);
+
+        return new JsonResponse(['message' => 'Post unliked successfully', 'likeCount' => $likeCount]);
+    }
+
 
     #[Route('/post/{id}/favorite', name: 'post_favorite', methods: ['POST'])]
     public function favoritePost(Post $post, EntityManagerInterface $em): JsonResponse

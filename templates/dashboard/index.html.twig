@@ -581,6 +581,118 @@
             color: #007BFF; /* Changes the color of the links on hover */
         }
 
+
+        /*les posts*/
+
+        .post {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            font-family: Arial, sans-serif;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-avatar img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .post-user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-username {
+            font-weight: bold;
+        }
+
+        .post-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .post-content p {
+            margin: 10px 0;
+        }
+
+        .post-content img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            color: #555;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+
+
+
+        /*network*/
+        #networkContainer {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .network-column {
+            flex: 1;
+            max-width: 48%;
+        }
+
+        .network-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+
+        }
+
+        .network-card-body {
+            display: flex;
+            align-items: center;
+        }
+
+        .network-card-img {
+            border-radius: 50%;
+            height: 60px;
+            width: 60px;
+            margin-right: 20px;
+        }
+
+        .network-card-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .network-card p {
+            color: #333;
+            font-size: 16px;
+            margin: 0;
+        }
+
+
+
     </style>
 
 
@@ -646,7 +758,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="logout">
+                <a href="{{ url('app_logout') }}" class="logout">
                     <i class='bx bxs-log-out-circle'></i>
                     <span class="text">Logout</span>
                 </a>
@@ -662,12 +774,12 @@
         <!-- NAVBAR -->
         <nav>
             <i class='bx bx-menu'></i>
-            {#            <a href="#" class="nav-link">Categories</a> #}
+            <a href="#" class="nav-link">Categories</a>
             <form id="search-form" action="#" onsubmit="return false;">
-                {#                <div class="form-input"> #}
-                {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
-                {#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button> #}
-                {#                </div> #}
+{#                <div class="form-input">#}
+{#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off">#}
+{#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button>#}
+{#                </div>#}
                 <h4>Dashboard</h4>
             </form>
             <input type="checkbox" id="switch-mode" hidden>
@@ -676,9 +788,19 @@
                 <i class='bx bxs-bell'></i>
                 <span class="num">8</span>
             </a>
-            <a href="#" class="profile">
-                <img src="{{ asset('images/shoes.jpg') }}" alt="">
-            </a>
+            {% if app.user %}
+                <a href="#" class="profile">
+                    {% if app.user.image %}
+                        <img src="{{ asset('images/' ~ app.user.image) }}" alt="User Image">
+                    {% else %}
+                        <span>{{ app.user.username }}</span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="profile">
+                    <span>Se connecter</span>
+                </a>
+            {% endif %}
         </nav>
         <!-- NAVBAR -->
         <!-- MAIN -->
@@ -752,16 +874,12 @@
 
 
             {# dashboard/index.html.twig #}
-
-
             <div class="nav-links">
                 <li><a href="#" id="loadFavorites">Favoris</a></li>
                 <li><a href="#" id="loadPosts">Posts</a></li>
                 <li><a href="#" id="loadNetwork">Réseau</a></li>
                 <li><a href="#" data-bs-toggle="modal" data-bs-target="#addPostModal">Ajouter Post</a></li>
-
             </div>
-
 
             <div class="modal fade" id="addPostModal">
                 <div class="modal-dialog modal-dialog-centered">
@@ -801,8 +919,7 @@
                                 {{ form_errors(postForm.status) }}
                             </div>
                             <div class="form-group text-right">
-                                <button type="submit"
-                                        class="btn btn-primary">{{ button_label|default('Save') }}</button>
+                                <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
                             </div>
                             {{ form_end(postForm) }}
                         </div>
@@ -811,14 +928,26 @@
             </div>
             <div id="content">
                 <div id="favoritesContainer"></div>
-                <div id="postsContainer"></div>
-                <div id="networkContainer"></div>
+                <div id="postsContainer">
+                    {% for post in user.posts %}
+                        <div class="post">
+                            <h3>{{ post.title }}</h3>
+                            <p>{{ post.content }}</p>
+                            <img src="/images/{{ post.image }}" alt="{{ post.title }}">
+                            <p>By {{ post.user.username }}</p>
+                            <a href="{{ path('dashboard_edit', {'id': post.id}) }}" class="btn btn-primary">Éditer</a>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div id="networkContainer" class="network-columns">
+                    <div id="subscriptionsContainer" class="network-column"></div>
+                    <div id="subscribersContainer" class="network-column"></div>
+                </div>
             </div>
+
 
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script>
-
-
                 $(document).ready(function () {
                     $('#loadFavorites').on('click', function (e) {
                         e.preventDefault();
@@ -850,35 +979,46 @@
                         });
                     });
 
-                    $('#loadPosts').on('click', function (e) {
-                        e.preventDefault();
-                        $('#favoritesContainer').empty();
-                        $('#networkContainer').empty();
-                        $.ajax({
-                            url: '{{ path('dashboard_posts') }}',
-                            method: 'GET',
-                            success: function (data) {
-                                $('#postsContainer').empty();
-                                if (data.length > 0) {
-                                    $.each(data, function (index, post) {
-                                        $('#postsContainer').append(
-                                            '<div class="user-post">' +
-                                            '<h3>' + post.title + '</h3>' +
-                                            '<p>' + post.content + '</p>' +
-                                            '<img src="/images/' + post.image + '" alt="' + post.title + '">' +
-                                            '<p>By ' + post.username + '</p>' +
-                                            '</div>'
-                                        );
-                                    });
-                                } else {
-                                    $('#postsContainer').append('<p>No posts found.</p>');
-                                }
-                            },
-                            error: function () {
-                                $('#postsContainer').append('<p>Failed to load posts.</p>');
-                            }
-                        });
-                    });
+                    {#$('#loadPosts').on('click', function (e) {#}
+                    {#    e.preventDefault();#}
+                    {#    $('#favoritesContainer').empty();#}
+                    {#    $('#networkContainer').empty();#}
+                    {#    $.ajax({#}
+                    {#        url: '{{ path('dashboard_posts') }}',#}
+                    {#        method: 'GET',#}
+                    {#        success: function (data) {#}
+                    {#            $('#postsContainer').empty();#}
+                    {#            if (data.length > 0) {#}
+                    {#                $.each(data, function (index, post) {#}
+                    {#                    $('#postsContainer').append(#}
+                    {#                        '<div class="post">' +#}
+                    {#                        '<div class="post-header">' +#}
+                    {#                        '<div class="post-avatar"><img src="/path-to-avatar" alt="User Avatar"></div>' +#}
+                    {#                        '<div class="post-user-info">' +#}
+                    {#                        '<span class="post-username">' + post.username + '</span>' +#}
+                    {#                        '<span class="post-date">Posted on ' + post.date + '</span>' +#}
+                    {#                        '</div>' +#}
+                    {#                        '</div>' +#}
+                    {#                        '<div class="post-content">' +#}
+                    {#                        '<p>' + post.content + '</p>' +#}
+                    {#                        '<img src="/images/' + post.image + '" alt="' + post.title + '">' +#}
+                    {#                        '</div>' +#}
+                    {#                        '<div class="post-actions">' +#}
+                    {#                        '<span class="post-likes">' + post.likes + ' likes</span>' +#}
+                    {#                        '<span class="post-comments">' + post.comments + ' comments</span>' +#}
+                    {#                        '</div>' +#}
+                    {#                        '</div>'#}
+                    {#                    );#}
+                    {#                });#}
+                    {#            } else {#}
+                    {#                $('#postsContainer').append('<p>No posts found.</p>');#}
+                    {#            }#}
+                    {#        },#}
+                    {#        error: function () {#}
+                    {#            $('#postsContainer').append('<p>Failed to load posts.</p>');#}
+                    {#        }#}
+                    {#    });#}
+                    {#});#}
 
                     $('#loadNetwork').on('click', function (e) {
                         e.preventDefault();
@@ -888,34 +1028,45 @@
                             url: '{{ path('dashboard_subscriptions') }}',
                             method: 'GET',
                             success: function (data) {
-                                $('#networkContainer').empty();
+                                $('#subscriptionsContainer').empty();
+                                $('#subscribersContainer').empty();
 
                                 if (data.subscriptions.length > 0) {
-                                    $('#networkContainer').append('<h3>Subscriptions</h3>');
+                                    $('#subscriptionsContainer').append('<h3>Abonnement</h3>');
                                     $.each(data.subscriptions, function (index, subscription) {
-                                        $('#networkContainer').append(
-                                            '<div class="network-user">' +
+                                        $('#subscriptionsContainer').append(
+                                            '<div class="network-card">' +
+                                            '<div class="network-card-body">' +
+                                            '<img src="/images/' + subscription.user_image + '" alt="' + subscription.username + '" class="network-card-img">' +
+                                            '<div class="network-card-text">' +
                                             '<p>' + subscription.username + '</p>' +
-                                            '<img src="/images/' + subscription.user_image + '" alt="' + subscription.username + '">' +
+                                            '<p>' + subscription.profession + '</p>' +
+                                            '</div>' +
+                                            '</div>' +
                                             '</div>'
                                         );
                                     });
                                 } else {
-                                    $('#networkContainer').append('<p>No subscriptions found.</p>');
+                                    $('#subscriptionsContainer').append('<p>No subscriptions found.</p>');
                                 }
 
                                 if (data.subscribers.length > 0) {
-                                    $('#networkContainer').append('<h3>Subscribers</h3>');
+                                    $('#subscribersContainer').append('<h3>Abonner</h3>');
                                     $.each(data.subscribers, function (index, subscriber) {
-                                        $('#networkContainer').append(
-                                            '<div class="network-user">' +
+                                        $('#subscribersContainer').append(
+                                            '<div class="network-card">' +
+                                            '<div class="network-card-body">' +
+                                            '<img src="/images/' + subscriber.user_image + '" alt="' + subscriber.username + '" class="network-card-img">' +
+                                            '<div class="network-card-text">' +
                                             '<p>' + subscriber.username + '</p>' +
-                                            '<img src="/images/' + subscriber.user_image + '" alt="' + subscriber.username + '">' +
+                                            '<p>' + subscriber.profession + '</p>' +
+                                            '</div>' +
+                                            '</div>' +
                                             '</div>'
                                         );
                                     });
                                 } else {
-                                    $('#networkContainer').append('<p>No subscribers found.</p>');
+                                    $('#subscribersContainer').append('<p>No subscribers found.</p>');
                                 }
                             },
                             error: function () {
@@ -924,9 +1075,10 @@
                         });
                     });
                 });
-
-
             </script>
+
+
+
 
 
             <script>

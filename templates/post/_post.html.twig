@@ -1,4 +1,3 @@
-<!-- templates/post/_post.html.twig -->
 <div class="middle-panel">
     <div class="post">
         <div class="post-top">
@@ -32,7 +31,7 @@
                 <span>Comment</span>
             </div>
             <div class="action share-action">
-                <i class="fa fa-share"></i>
+                <i class="fa fa-share share-btn" data-post-id="{{ post.id }}"></i>
                 <span>Share</span>
             </div>
         </div>
@@ -42,3 +41,19 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+    document.querySelectorAll('.share-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+            const postTitle = this.closest('.post').querySelector('.post-content').innerText;
+            const postImage = this.closest('.post').querySelector('.post-image').src;
+
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(postTitle)} - ${encodeURIComponent(postImage)}`;
+
+            window.open(whatsappUrl, '_blank');
+        });
+    });
+</script>

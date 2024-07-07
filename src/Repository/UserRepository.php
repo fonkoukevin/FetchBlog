@@ -44,6 +44,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
+
+    // src/Repository/UserRepository.php
+    public function findTopUsersBySubscribers(int $limit = 3): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u AS user, COUNT(s.id) AS subscriberCount')
+            ->leftJoin('u.subscriptions', 's')
+            ->groupBy('u.id')
+            ->orderBy('subscriberCount', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

@@ -14,8 +14,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+#[IsGranted('ROLE_USER')]
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'dashboard')]
@@ -103,6 +105,7 @@ class DashboardController extends AbstractController
         $postsData = [];
         foreach ($posts as $post) {
             $postsData[] = [
+                'id' => $post->getId(),
                 'title' => $post->getTitle(),
                 'content' => $post->getContent(),
                 'image' => $post->getImage(),
@@ -112,6 +115,7 @@ class DashboardController extends AbstractController
 
         return new JsonResponse($postsData);
     }
+
 
     #[Route('/dashboard/subscriptions', name: 'dashboard_subscriptions', methods: ['GET'])]
     public function getSubscriptions(EntityManagerInterface $entityManager): JsonResponse
@@ -149,6 +153,46 @@ class DashboardController extends AbstractController
             'subscribers' => $subscribersData,
         ]);
     }
+    #[Route('/dashboard/edit/{id}', name: 'dashboard_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Post $post, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $post->setUpdatedAt(new \DateTimeImmutable());
+
+            // Handle image upload if a new image is provided
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/images',
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle the exception appropriately
+                    $this->addFlash('error', 'Image upload failed');
+                }
+
+                $post->setImage($newFilename);
+            }
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('dashboard');
+        }
+
+        return $this->render('dashboard/edit.html.twig', [
+            'postForm' => $form->createView(),
+            'post' => $post,
+        ]);
+    }
+
 
 }
 

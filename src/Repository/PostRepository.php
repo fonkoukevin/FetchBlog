@@ -16,8 +16,6 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
-
-
     public function findByTitleOrUsername(string $query): array
     {
         return $this->createQueryBuilder('p')
@@ -29,6 +27,18 @@ class PostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findTopUsersByLikes(int $limit = 3): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('u AS user, COUNT(l.id) AS likeCount')
+            ->join('p.likes', 'l')
+            ->join('p.user', 'u')
+            ->groupBy('u.id')
+            ->orderBy('likeCount', 'DESC')
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
 
 
     //    /**

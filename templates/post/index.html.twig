@@ -384,12 +384,20 @@
 
         .suggestion-name {
             font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: -5px;
         }
 
         .suggestion-details {
             color: #777;
             font-size: 0.9em;
             margin-bottom: 5px;
+        }
+        .suggestion-detail{
+            margin-bottom: 5px;
+            color: #777;
+            font-size: 0.9em;
+            margin-top: -10px;
         }
 
         .add-friend {
@@ -649,7 +657,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="logout">
+                <a href="{{ url('app_logout') }}" class="logout">
                     <i class='bx bxs-log-out-circle'></i>
                     <span class="text">Logout</span>
                 </a>
@@ -678,102 +686,121 @@
                 <i class='bx bxs-bell'></i>
                 <span class="num">8</span>
             </a>
-            <a href="#" class="profile">
-                <img src="{{ asset('images/shoes.jpg') }}" alt="">
-            </a>
+            {% if app.user %}
+                <a href="#" class="profile">
+                    {% if app.user.image %}
+                        <img src="{{ asset('images/' ~ app.user.image) }}" alt="User Image">
+                    {% else %}
+                        <span>{{ app.user.username }}</span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="profile">
+                    <span>Se connecter</span>
+                </a>
+            {% endif %}
         </nav>
+
         <!-- NAVBAR -->
 
         <!-- MAIN -->
         <!-- MAIN -->
-        <div class="main p-3">
-            <div class="container">
-                <div class="row">
-                    <div class="col-8">
-                        <div id="posts-container">
-                            {% for post in posts %}
-                                {% include 'post/_post.html.twig' with { post: post } %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="col-4" style="padding-left: 50px">
-                        <!-- Profile and Suggestions Code -->
-                        <div class="con">
-                            <div class="profile">
-                                <div class="profile-header">
-                                    <img src="images/logo.png" alt="Profile Picture" style="border-radius: 30px; width: 40px">
-                                    <div class="profile-info">
-                                        <p class="profile-name">FetchBlog</p>
-                                    </div>
-                                </div>
-                                <div class="profile-description">
-                                    Trouver des articles de blog et des suggestions pour passer un bon moment.
-                                </div>
-                            </div>
 
-                            <div class="suggestions">
-                                <p class="suggestions-title">Suggestion</p>
+            <div class="main p-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-8">
+                            <div id="posts-container">
                                 {% for post in posts %}
-                                    <div class="suggestion">
-                                        <img src="https://via.placeholder.com/73x73" style="border-radius: 20px" alt="John Doe">
-                                        <div class="suggestion-info">
-                                            <p class="suggestion-name">{{ post.user.username }}</p>
-                                            <p class="suggestion-details">15 amis mutuels</p>
-                                            <a href="#" class="add-friend">Ajouter en amis</a>
-                                        </div>
-                                    </div>
+                                    {% include 'post/_post.html.twig' with { post: post } %}
                                 {% endfor %}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="col-4" style="padding-left: 50px">
+                            <!-- Profile and Suggestions Code -->
+                            <div class="con">
+                                <div class="profile">
+                                    <div class="profile-header">
+                                        <img src="{{ asset('images/logo.png') }}" alt="Profile Picture" style="border-radius: 30px; width: 40px">
 
-        <!-- Modal HTML for Post Details -->
-        <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="postModalLabel">Post Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="postDetails">
-                            <!-- Les détails du post seront chargés ici via AJAX -->
+                                        <div class="profile-info">
+                                            <p class="profile-name">FetchBlog</p>
+                                        </div>
+                                    </div>
+                                    <div class="profile-description">
+                                        Trouver des articles de blog et des suggestions pour passer un bon moment.
+                                    </div>
+                                </div>
+                                <!-- templates/post/index.html.twig -->
+                                <div class="suggestions">
+                                    <p class="suggestions-title">Suggestions</p>
+                                    {% for topUser in topUsers %}
+                                        <div class="suggestion">
+                                            <img  src="{{ asset('images/' ~ topUser.user.image) }}" style="border-radius: 5px; width: 45px;height: 45px" alt="{{ topUser.user.username }}">
+
+                                            <div class="suggestion-info">
+                                                <p class="suggestion-name">{{ topUser.user.username }}</p>
+                                                <p class="suggestion-details">{{ topUser.subscriberCount }} abonnés</p>
+                                                <p class="suggestion-detail">{{ topUser.user.profession }} </p>
+
+{#                                                <form method="post" action="{{ path('add_friend', {id: topUser.user.id}) }}">#}
+{#                                                    <button type="submit" class="add-friend">Ajouter en amis</button>#}
+{#                                                </form>#}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal HTML for Comments -->
-        <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="commentSection">
-                            <!-- Les commentaires seront chargés ici via AJAX -->
+            <!-- Modal HTML for Post Details -->
+            <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="postModalLabel">Post Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <textarea id="commentContent" class="form-control" placeholder="Write your comment here..."></textarea>
-                        <button id="submitComment" class="btn btn-primary mt-2">Submit</button>
+                        <div class="modal-body">
+                            <div id="postDetails">
+                                <!-- Les détails du post seront chargés ici via AJAX -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Modal HTML for Comments -->
+            <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="commentModalLabel">Comments</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="commentSection">
+                                <!-- Les commentaires seront chargés ici via AJAX -->
+                            </div>
+                            <textarea id="commentContent" class="form-control" rows="3" placeholder="Add a comment"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="submitComment" class="btn btn-primary">Submit Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
 
 
         <!-- MAIN -->
-    </section>
-
-
-
-
-    <!-- MAIN -->
     </section>
     <!-- CONTENT -->
 
@@ -825,42 +852,6 @@
             });
         });
 
-
-        // like
-        document.addEventListener('DOMContentLoaded', function() {
-            const likeButtons = document.querySelectorAll('.like-btn, .liked');
-
-            likeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (this.classList.contains('liked')) {
-                        alert('You have already liked this post.');
-                        return;
-                    }
-
-                    const postId = this.getAttribute('data-post-id');
-                    fetch(`/post/${postId}/like`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-Token': '{{ csrf_token('like') }}' // Utiliser un token CSRF pour la sécurité
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.message === 'Post liked successfully') {
-                                this.classList.remove('far', 'fa-thumbs-up', 'like-btn');
-                                this.classList.add('fa-solid', 'fa-thumbs-up', 'liked');
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                });
-            });
-        });
 
         // search
 

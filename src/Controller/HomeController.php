@@ -12,11 +12,12 @@ class HomeController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(Security $security): Response
     {
-//        dd($security->getUser());
+        $user = $security->getUser();
+
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'show_navbar' => false, // Indique que la barre de navigation ne doit pas être affichée
-
+            'user' => $user,
         ]);
     }
 }

@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentModal = new bootstrap.Modal(commentModalElement);
     let currentPostId = null;
 
-    // Fonction pour charger les détails d'un post
     const loadPostDetails = (postId) => {
         fetch(`/post/${postId}/details`)
             .then(response => {
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    // Fonction pour charger les commentaires d'un post
     const loadComments = (postId) => {
         fetch(`/post/${postId}/comments`)
             .then(response => {
@@ -70,24 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    // Fonction pour mettre à jour le compteur de likes
-    const updateLikeCount = (postId, increment) => {
+    const updateLikeCount = (postId, newCount) => {
         const postElement = document.querySelector(`.post-image[data-post-id="${postId}"]`).closest('.post');
         const likeCountElement = postElement.querySelector('.like-count');
-        let currentCount = parseInt(likeCountElement.getAttribute('data-likes'), 10);
-        currentCount += increment;
-        likeCountElement.setAttribute('data-likes', currentCount);
-        likeCountElement.textContent = `${currentCount} ${currentCount === 1 ? 'like' : 'likes'}`;
 
-        // Update the post-meta section
+        likeCountElement.setAttribute('data-likes', newCount);
+        likeCountElement.textContent = `${newCount} ${newCount === 1 ? 'like' : 'likes'}`;
+
         const postMetaElement = postElement.querySelector('.post-meta');
         postMetaElement.innerHTML = `
-            <span class="like-count" data-likes="${currentCount}">${currentCount} ${currentCount === 1 ? 'like' : 'likes'}</span>,
+            <span class="like-count" data-likes="${newCount}">${newCount} ${newCount === 1 ? 'like' : 'likes'}</span>,
             <span class="comment-count" data-comments="${postMetaElement.querySelector('.comment-count').getAttribute('data-comments')}">${postMetaElement.querySelector('.comment-count').getAttribute('data-comments')} comments</span>
         `;
     };
 
-    // Fonction pour mettre à jour le compteur de commentaires
     const updateCommentCount = (postId, increment) => {
         const postElement = document.querySelector(`.post-image[data-post-id="${postId}"]`).closest('.post');
         const commentCountElement = postElement.querySelector('.comment-count');
@@ -96,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
         commentCountElement.setAttribute('data-comments', currentCount);
         commentCountElement.textContent = `${currentCount} ${currentCount === 1 ? 'comment' : 'comments'}`;
 
-        // Update the post-meta section
         const postMetaElement = postElement.querySelector('.post-meta');
         postMetaElement.innerHTML = `
             <span class="like-count" data-likes="${postMetaElement.querySelector('.like-count').getAttribute('data-likes')}">${postMetaElement.querySelector('.like-count').getAttribute('data-likes')} likes</span>,
@@ -104,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     };
 
-    // Délégation d'événements pour les détails des posts
     postsContainer.addEventListener('click', event => {
         if (event.target.classList.contains('post-image')) {
             const postId = event.target.getAttribute('data-post-id');
@@ -114,7 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
             loadComments(postId);
         } else if (event.target.classList.contains('like-btn') || event.target.classList.contains('liked')) {
             const postId = event.target.getAttribute('data-post-id');
-            fetch(`/post/${postId}/like`, {
+            const likeAction = event.target.classList.contains('liked') ? 'unlike' : 'like';
+
+            fetch(`/post/${postId}/${likeAction}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,10 +121,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response.json();
                 })
                 .then(data => {
-                    if (data.success) {
-                        updateLikeCount(postId, event.target.classList.contains('liked') ? -1 : 1);
+                    if (data.message) {
+                        const newLikeCount = data.likeCount;
+                        updateLikeCount(postId, newLikeCount);
                         event.target.classList.toggle('liked');
                         event.target.classList.toggle('like-btn');
+
+                        if (event.target.classList.contains('liked')) {
+                            event.target.classList.remove('far');
+                            event.target.classList.add('fa-solid');
+                        } else {
+                            event.target.classList.remove('fa-solid');
+                            event.target.classList.add('far');
+                        }
                     }
                 })
                 .catch(error => {
@@ -139,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Écouteur pour la recherche
     searchInput.addEventListener('input', () => {
         const query = searchInput.value.trim();
 
@@ -152,14 +154,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response.text();
                 })
                 .then(html => {
-                    console.log('Search response:', html); // Log response for debugging
                     postsContainer.innerHTML = html;
                 })
                 .catch(error => {
                     console.error('Error during search:', error);
                 });
         } else {
-            // Recharger tous les posts si la recherche est vide
             fetch('/post')
                 .then(response => {
                     if (!response.ok) {
@@ -168,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response.text();
                 })
                 .then(html => {
-                    console.log('Reload all posts response:', html); // Log response for debugging
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     const newPostsContainer = doc.getElementById('posts-container');
@@ -180,12 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Réinitialiser l'état de la page lors de la fermeture du modal
     postModalElement.addEventListener('hidden.bs.modal', () => {
         postDetails.innerHTML = '';
     });
 
-    // Gestion de la soumission des commentaires
     submitComment.addEventListener('click', () => {
         const content = commentContent.value.trim();
         if (content && currentPostId) {
@@ -214,8 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => {
                     console.error('Error submitting comment:', error);
                 });
-        } else {
-            alert('Comment content cannot be empty');
         }
     });
 });
