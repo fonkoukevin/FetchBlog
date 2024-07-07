@@ -27,10 +27,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class PostController extends AbstractController
 {
     // src/Controller/PostController.php
+
     #[Route('/post', name: 'posts')]
     public function index(PostRepository $repository, UserRepository $userRepository, CategoryRepository $categoryRepository): Response
     {
-        $posts = $repository->findAll();
+        $statusId = 1; // ID du statut "créé"
+        $posts = $repository->findByStatus($statusId);
         $topUsers = $userRepository->findTopUsersBySubscribers();
         $categories = $categoryRepository->findAll();
 
@@ -41,7 +43,6 @@ class PostController extends AbstractController
             'show_navbar' => true,
         ]);
     }
-
 
 
     #[Route('/add-friend/{id}', name: 'add_friend', methods: ['POST'])]
@@ -272,10 +273,17 @@ class PostController extends AbstractController
     // src/Controller/PostController.php
 
     #[Route('/post/filter', name: 'post_filter', methods: ['GET'])]
-    public function filter(Request $request, PostRepository $repository): Response
+    public function filter(Request $request, PostRepository $postRepository, CategoryRepository $categoryRepository): Response
     {
         $categoryId = $request->query->get('category_id');
-        $posts = $repository->findByCategory($categoryId);
+
+        // If no category is selected, return all posts
+        if (!$categoryId) {
+            $posts = $postRepository->findAll();
+        } else {
+            $category = $categoryRepository->find($categoryId);
+            $posts = $category ? $category->getPosts() : [];
+        }
 
         $html = '';
         foreach ($posts as $post) {
@@ -286,6 +294,5 @@ class PostController extends AbstractController
 
         return new Response($html);
     }
-
 
 }

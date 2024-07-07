@@ -53,7 +53,15 @@ class PostRepository extends ServiceEntityRepository
     }
 
 
-
+    public function findByStatus(int $statusId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.status = :statusId')
+            ->setParameter('statusId', $statusId)
+            ->orderBy('p.createdAt', 'ASC') // Vous pouvez personnaliser l'ordre
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Post[] Returns an array of Post objects
     //     */

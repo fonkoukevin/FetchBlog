@@ -49,12 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-
-
     categoryFilter.addEventListener('change', () => {
         const categoryId = categoryFilter.value;
 
-        fetch(`/post/filter?category_id=${categoryId}`)
+        // Check if "Aucun catégorie" is selected (assuming it's an empty value)
+        const url = categoryId ? `/post/filter?category_id=${categoryId}` : `/post/filter`;
+
+        fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
