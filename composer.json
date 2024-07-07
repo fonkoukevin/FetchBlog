@@ -96,7 +96,9 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "liip/test-fixtures-bundle": "^3.0",
+        "phpunit/phpunit": "^9.6",
         "symfony/browser-kit": "7.1.*",
         "symfony/css-selector": "7.1.*",
         "symfony/debug-bundle": "7.1.*",
