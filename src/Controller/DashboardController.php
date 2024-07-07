@@ -72,7 +72,7 @@ class DashboardController extends AbstractController
 
         // Retrieve the number of likes
         $likeCount = $entityManager->getRepository('App\Entity\Like')->countLikesByUser($user);
-
+        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles());
         return $this->render('dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
             'show_navbar' => true,
@@ -80,7 +80,9 @@ class DashboardController extends AbstractController
             'postForm' => $form->createView(),
             'favoriteCount' => $favoriteCount,
             'likeCount' => $likeCount,
-            'posts' => $user->getPosts() // Ensure posts are passed to the template
+            'posts' => $user->getPosts(),// Ensure posts are passed to the template
+            'currentUserId' => $user->getId(),
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -216,6 +218,31 @@ class DashboardController extends AbstractController
         return new JsonResponse(['status' => 'error'], Response::HTTP_BAD_REQUEST);
     }
 
+
+    #[Route('/dashboard/{id}', name: 'user_dashboard', requirements: ['id' => '\d+'])]
+    public function userDashboard(User $user, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        $currentUser = $this->getUser();
+
+        // Retrieve the number of favorites
+        $favoriteCount = $entityManager->getRepository('App\Entity\Favorite')->countFavoritesByUser($user);
+
+        // Retrieve the number of likes
+        $likeCount = $entityManager->getRepository('App\Entity\Like')->countLikesByUser($user);
+        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles());
+        return $this->render('dashboard/index.html.twig', [
+            'controller_name' => 'DashboardController',
+            'show_navbar' => true,
+            'user' => $user,
+            'isAdmin' => $isAdmin,
+            'favoriteCount' => $favoriteCount,
+            'likeCount' => $likeCount,
+            'posts' => $user->getPosts(), // Ensure posts are passed to the template
+            'currentUserId' => $currentUser ? $currentUser->getId() : null,
+            'postForm' => $currentUser && $currentUser->getId() === $user->getId() ? $this->createForm(PostType::class)->createView() : null,
+
+            ]);
+    }
 
 }
 

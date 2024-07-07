@@ -941,7 +941,7 @@
                 </div>
             </div>
 
-
+            {% if currentUserId is not null and (currentUserId == user.id or isAdmin) %}
             {# dashboard/index.html.twig #}
             <div class="nav-links">
                 <li><a href="#" id="loadFavorites">Favoris</a></li>
@@ -997,6 +997,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="content">
                 <div id="favoritesContainer"></div>
                 <div id="postsContainer">
@@ -1026,7 +1027,9 @@
                 </div>
             </div>
 
-
+            {% else %}
+                <p>Tu n'as pas la permission de poster ou encore de voir les favori.</p>
+            {% endif %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script>
 

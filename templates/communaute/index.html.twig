@@ -580,8 +580,6 @@
         <!-- NAVBAR -->
         <!-- MAIN -->
         <div class="main p-3">
-            {#            <div class="container"> #}
-
             <h4 style="font-weight: bold">Communauté</h4>
 
             <div id="users-list" class="users-list">
@@ -591,7 +589,9 @@
                             <img src="{{ asset('images/' ~ user.image) }}" alt="">
                         </div>
                         <div class="user-info">
-                            <h2>{{ user.username }}</h2>
+                            <h2>
+                                <a href="{{ path('user_dashboard', {id: user.id}) }}">{{ user.username }}</a>
+                            </h2>
                             <p>{{ user.profession }}</p>
                             <button class="subscribe-btn" data-user-id="{{ user.id }}">
                                 S'abonner
@@ -601,39 +601,30 @@
                 {% endfor %}
             </div>
 
-
-
-
             <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        document.querySelectorAll('.subscribe-btn').forEach(function(button) {
-                            button.addEventListener('click', function() {
-                                const userId = this.getAttribute('data-user-id');
-                                fetch(`/subscribe/${userId}`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-Requested-With': 'XMLHttpRequest',
-                                        'Content-Type': 'application/json',
-                                    },
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.querySelectorAll('.subscribe-btn').forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            const userId = this.getAttribute('data-user-id');
+                            fetch('/subscribe/' + userId, {
+                                method: 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.message) {
+                                        alert(data.message);
+                                        // You can update the button text or UI here based on the response
+                                    }
                                 })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.message) {
-                                            alert(data.message);
-                                            // You can update the button text or UI here based on the response
-                                        }
-                                    })
-                                    .catch(error => console.error('Error:', error));
-                            });
+                                .catch(error => console.error('Error:', error));
                         });
                     });
-                </script>
-
-
-
-
-            {#                {% endblock %} #}
-
+                });
+            </script>
         </div>
 
 
