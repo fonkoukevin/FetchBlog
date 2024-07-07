@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\Status;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\PostType;
@@ -14,12 +15,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[IsGranted('ROLE_USER')]
 class DashboardController extends AbstractController
 {
+    // DashboardController.php
+
     #[Route('/dashboard', name: 'dashboard')]
     public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
@@ -74,6 +80,7 @@ class DashboardController extends AbstractController
             'postForm' => $form->createView(),
             'favoriteCount' => $favoriteCount,
             'likeCount' => $likeCount,
+            'posts' => $user->getPosts() // Ensure posts are passed to the template
         ]);
     }
 
@@ -153,7 +160,7 @@ class DashboardController extends AbstractController
             'subscribers' => $subscribersData,
         ]);
     }
-    #[Route('/dashboard/edit/{id}', name: 'dashboard_edit', methods: ['GET', 'POST'])]
+    #[Route('/dashboard/edit/{id}', name: 'dashboard_edit', methods: ['GET', 'POST'], requirements: ['id' => Requirement::DIGITS] )]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(PostType::class, $post);
@@ -191,6 +198,22 @@ class DashboardController extends AbstractController
             'postForm' => $form->createView(),
             'post' => $post,
         ]);
+    }
+
+
+    #[Route('/dashboard/delete/{id}', name: 'dashboard_delete', methods: ['POST'])]
+    public function delete(Post $post, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $status = $entityManager->getRepository(Status::class)->findOneBy(['name' => 'supprimer']);
+
+        if ($status) {
+            $post->setStatus($status);
+            $entityManager->flush();
+
+            return new JsonResponse(['status' => 'success']);
+        }
+
+        return new JsonResponse(['status' => 'error'], Response::HTTP_BAD_REQUEST);
     }
 
 

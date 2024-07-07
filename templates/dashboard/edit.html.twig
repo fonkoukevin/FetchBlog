@@ -1,35 +1,77 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Éditer le post</h1>
-    {{ form_start(postForm, {'attr': {'class': 'post-form'}}) }}
-    <div class="form-group">
-        {{ form_label(postForm.title) }}
-        {{ form_widget(postForm.title, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(postForm.title) }}
+    <style>
+        /* style.css */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control,
+        .form-control-file {
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+    </style>
+    <div class="container mt-5">
+        <h1 class="mb-4">Éditer le post</h1>
+        {{ form_start(postForm, {'attr': {'class': 'post-form'}}) }}
+        <div class="form-group mb-3">
+            {{ form_label(postForm.title, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(postForm.title, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(postForm.title) }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form_label(postForm.slug, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(postForm.slug, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(postForm.slug) }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form_label(postForm.content, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(postForm.content, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(postForm.content) }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form_label(postForm.image, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(postForm.image, {'attr': {'class': 'form-control-file'}}) }}
+            {{ form_errors(postForm.image) }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form_label(postForm.status, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(postForm.status, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(postForm.status) }}
+        </div>
+        <div class="form-group text-right">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+        {{ form_end(postForm) }}
     </div>
-    <div class="form-group">
-        {{ form_label(postForm.slug) }}
-        {{ form_widget(postForm.slug, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(postForm.slug) }}
-    </div>
-    <div class="form-group">
-        {{ form_label(postForm.content) }}
-        {{ form_widget(postForm.content, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(postForm.content) }}
-    </div>
-    <div class="form-group">
-        {{ form_label(postForm.image) }}
-        {{ form_widget(postForm.image, {'attr': {'class': 'form-control-file'}}) }}
-        {{ form_errors(postForm.image) }}
-    </div>
-    <div class="form-group">
-        {{ form_label(postForm.status) }}
-        {{ form_widget(postForm.status, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(postForm.status) }}
-    </div>
-    <div class="form-group text-right">
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-    </div>
-    {{ form_end(postForm) }}
 {% endblock %}

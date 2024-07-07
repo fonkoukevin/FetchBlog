@@ -640,8 +640,6 @@
         }
 
 
-
-
         /*network*/
         #networkContainer {
             display: flex;
@@ -692,6 +690,77 @@
         }
 
 
+        /*encore post css*/
+        #postsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .post-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 350px; /* Augmentation de la largeur de la carte */
+            height: 450px; /* Augmentation de la hauteur de la carte */
+            margin: 0 auto; /* Centrer la carte */
+        }
+
+        .post-content {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px; /* Augmentation de la hauteur de l'image */
+            object-fit: contain; /* Ajustement de l'image pour qu'elle ne soit pas coupée */
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .post-author {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .post-actions .btn {
+            padding: 6px 10px; /* Taille des boutons */
+            font-size: 0.8em; /* Taille du texte des boutons */
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-primary:hover, .btn-danger:hover {
+            opacity: 0.8;
+        }
+
+        .nav-links li a.active-link {
+            font-weight: bold;
+            color: #007bff; /* Couleur différente pour le lien actif */
+            text-decoration: underline; /* Souligner le lien actif */
+        }
 
     </style>
 
@@ -776,10 +845,10 @@
             <i class='bx bx-menu'></i>
             <a href="#" class="nav-link">Categories</a>
             <form id="search-form" action="#" onsubmit="return false;">
-{#                <div class="form-input">#}
-{#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off">#}
-{#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button>#}
-{#                </div>#}
+                {#                <div class="form-input"> #}
+                {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
+                {#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button> #}
+                {#                </div> #}
                 <h4>Dashboard</h4>
             </form>
             <input type="checkbox" id="switch-mode" hidden>
@@ -881,6 +950,7 @@
                 <li><a href="#" data-bs-toggle="modal" data-bs-target="#addPostModal">Ajouter Post</a></li>
             </div>
 
+
             <div class="modal fade" id="addPostModal">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -919,7 +989,8 @@
                                 {{ form_errors(postForm.status) }}
                             </div>
                             <div class="form-group text-right">
-                                <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+                                <button type="submit"
+                                        class="btn btn-primary">{{ button_label|default('Save') }}</button>
                             </div>
                             {{ form_end(postForm) }}
                         </div>
@@ -930,15 +1001,25 @@
                 <div id="favoritesContainer"></div>
                 <div id="postsContainer">
                     {% for post in user.posts %}
-                        <div class="post">
-                            <h3>{{ post.title }}</h3>
-                            <p>{{ post.content }}</p>
-                            <img src="/images/{{ post.image }}" alt="{{ post.title }}">
-                            <p>By {{ post.user.username }}</p>
-                            <a href="{{ path('dashboard_edit', {'id': post.id}) }}" class="btn btn-primary">Éditer</a>
-                        </div>
+                        {% if post.status.id != 2 %}
+                            <div class="post-card" id="post-{{ post.id }}">
+                                <div class="post-content">
+                                    <h3>{{ post.title }}</h3>
+                                    <p>{{ post.content }}</p>
+                                    <img src="/images/{{ post.image }}" alt="{{ post.title }}" class="post-image">
+                                    <p class="post-author">By {{ post.user.username }}</p>
+                                </div>
+                                <div class="post-actions">
+                                    <a href="{{ path('dashboard_edit', {'id': post.id}) }}" class="btn btn-primary">Éditer</a>
+                                    <button class="btn btn-danger delete-post" data-id="{{ post.id }}">Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
+
+
                 <div id="networkContainer" class="network-columns">
                     <div id="subscriptionsContainer" class="network-column"></div>
                     <div id="subscribersContainer" class="network-column"></div>
@@ -948,6 +1029,52 @@
 
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script>
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    const navLinks = document.querySelectorAll('.nav-links li a');
+
+                    navLinks.forEach(link => {
+                        link.addEventListener('click', function () {
+                            // Retirer la classe active de tous les liens
+                            navLinks.forEach(link => link.classList.remove('active-link'));
+
+                            // Ajouter la classe active au lien cliqué
+                            this.classList.add('active-link');
+                        });
+                    });
+                });
+
+
+                // delete
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.querySelectorAll('.delete-post').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const postId = this.getAttribute('data-id');
+
+                            fetch(`/dashboard/delete/${postId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-Token': '{{ csrf_token('delete-post') }}'  // Ajoutez un token CSRF si nécessaire
+                                },
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        document.getElementById(`post-${postId}`).remove();
+                                    } else {
+                                        alert('Erreur lors de la suppression du post');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Erreur:', error);
+                                });
+                        });
+                    });
+                });
+
+
                 $(document).ready(function () {
                     $('#loadFavorites').on('click', function (e) {
                         e.preventDefault();
@@ -979,46 +1106,46 @@
                         });
                     });
 
-                    {#$('#loadPosts').on('click', function (e) {#}
-                    {#    e.preventDefault();#}
-                    {#    $('#favoritesContainer').empty();#}
-                    {#    $('#networkContainer').empty();#}
-                    {#    $.ajax({#}
-                    {#        url: '{{ path('dashboard_posts') }}',#}
-                    {#        method: 'GET',#}
-                    {#        success: function (data) {#}
-                    {#            $('#postsContainer').empty();#}
-                    {#            if (data.length > 0) {#}
-                    {#                $.each(data, function (index, post) {#}
-                    {#                    $('#postsContainer').append(#}
-                    {#                        '<div class="post">' +#}
-                    {#                        '<div class="post-header">' +#}
-                    {#                        '<div class="post-avatar"><img src="/path-to-avatar" alt="User Avatar"></div>' +#}
-                    {#                        '<div class="post-user-info">' +#}
-                    {#                        '<span class="post-username">' + post.username + '</span>' +#}
-                    {#                        '<span class="post-date">Posted on ' + post.date + '</span>' +#}
-                    {#                        '</div>' +#}
-                    {#                        '</div>' +#}
-                    {#                        '<div class="post-content">' +#}
-                    {#                        '<p>' + post.content + '</p>' +#}
-                    {#                        '<img src="/images/' + post.image + '" alt="' + post.title + '">' +#}
-                    {#                        '</div>' +#}
-                    {#                        '<div class="post-actions">' +#}
-                    {#                        '<span class="post-likes">' + post.likes + ' likes</span>' +#}
-                    {#                        '<span class="post-comments">' + post.comments + ' comments</span>' +#}
-                    {#                        '</div>' +#}
-                    {#                        '</div>'#}
-                    {#                    );#}
-                    {#                });#}
-                    {#            } else {#}
-                    {#                $('#postsContainer').append('<p>No posts found.</p>');#}
-                    {#            }#}
-                    {#        },#}
-                    {#        error: function () {#}
-                    {#            $('#postsContainer').append('<p>Failed to load posts.</p>');#}
-                    {#        }#}
-                    {#    });#}
-                    {#});#}
+                    {# $('#loadPosts').on('click', function (e) { #}
+                    {#    e.preventDefault(); #}
+                    {#    $('#favoritesContainer').empty(); #}
+                    {#    $('#networkContainer').empty(); #}
+                    {#    $.ajax({ #}
+                    {#        url: '{{ path('dashboard_posts') }}', #}
+                    {#        method: 'GET', #}
+                    {#        success: function (data) { #}
+                    {#            $('#postsContainer').empty(); #}
+                    {#            if (data.length > 0) { #}
+                    {#                $.each(data, function (index, post) { #}
+                    {#                    $('#postsContainer').append( #}
+                    {#                        '<div class="post">' + #}
+                    {#                        '<div class="post-header">' + #}
+                    {#                        '<div class="post-avatar"><img src="/path-to-avatar" alt="User Avatar"></div>' + #}
+                    {#                        '<div class="post-user-info">' + #}
+                    {#                        '<span class="post-username">' + post.username + '</span>' + #}
+                    {#                        '<span class="post-date">Posted on ' + post.date + '</span>' + #}
+                    {#                        '</div>' + #}
+                    {#                        '</div>' + #}
+                    {#                        '<div class="post-content">' + #}
+                    {#                        '<p>' + post.content + '</p>' + #}
+                    {#                        '<img src="/images/' + post.image + '" alt="' + post.title + '">' + #}
+                    {#                        '</div>' + #}
+                    {#                        '<div class="post-actions">' + #}
+                    {#                        '<span class="post-likes">' + post.likes + ' likes</span>' + #}
+                    {#                        '<span class="post-comments">' + post.comments + ' comments</span>' + #}
+                    {#                        '</div>' + #}
+                    {#                        '</div>' #}
+                    {#                    ); #}
+                    {#                }); #}
+                    {#            } else { #}
+                    {#                $('#postsContainer').append('<p>No posts found.</p>'); #}
+                    {#            } #}
+                    {#        }, #}
+                    {#        error: function () { #}
+                    {#            $('#postsContainer').append('<p>Failed to load posts.</p>'); #}
+                    {#        } #}
+                    {#    }); #}
+                    {# }); #}
 
                     $('#loadNetwork').on('click', function (e) {
                         e.preventDefault();
@@ -1076,9 +1203,6 @@
                     });
                 });
             </script>
-
-
-
 
 
             <script>
