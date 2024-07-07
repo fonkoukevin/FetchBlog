@@ -40,6 +40,19 @@ class PostRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+// src/Repository/PostRepository.php
+
+    public function findByCategory($categoryId)
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.categories', 'c')
+            ->where('c.id = :categoryId')
+            ->setParameter('categoryId', $categoryId)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 
     //    /**
     //     * @return Post[] Returns an array of Post objects

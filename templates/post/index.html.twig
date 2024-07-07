@@ -634,10 +634,11 @@
                 </a>
             </li>
             <li>
-                <a class="librefrank nav-link {{ app.current_route starts with 'apropos'? 'active' :''}}" href="{{ path("apropos") }}" style="background: none">
+                <a class="librefrank nav-link {{ app.current_route starts with 'apropos'? 'active' :'' }}"
+                   href="{{ path("app_category") }}" style="background: none">
 
-                <i class='bx bxs-message-dots'></i>
-                    <span class="text">A propos</span>
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Category</span>
                 </a>
             </li>
             <li>
@@ -710,6 +711,14 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-8">
+                            <div class="filter-container mb-3">
+                                <select id="category-filter" class="form-select">
+                                    <option value="">Toutes les catégories</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <div id="posts-container">
                                 {% for post in posts %}
                                     {% include 'post/_post.html.twig' with { post: post } %}

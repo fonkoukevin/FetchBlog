@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Favorite;
 use App\Entity\Like;
@@ -9,6 +10,7 @@ use App\Entity\Post;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\PostType;
+use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\PostRepository;
@@ -26,17 +28,20 @@ class PostController extends AbstractController
 {
     // src/Controller/PostController.php
     #[Route('/post', name: 'posts')]
-    public function index(PostRepository $repository, UserRepository $userRepository): Response
+    public function index(PostRepository $repository, UserRepository $userRepository, CategoryRepository $categoryRepository): Response
     {
         $posts = $repository->findAll();
         $topUsers = $userRepository->findTopUsersBySubscribers();
+        $categories = $categoryRepository->findAll();
 
         return $this->render('post/index.html.twig', [
             'posts' => $posts,
             'topUsers' => $topUsers,
+            'categories' => $categories,
             'show_navbar' => true,
         ]);
     }
+
 
 
     #[Route('/add-friend/{id}', name: 'add_friend', methods: ['POST'])]
@@ -159,12 +164,18 @@ class PostController extends AbstractController
     #[Route('/post/{id}/details', name: 'post_details', methods: ['GET'])]
     public function postDetails(Post $post): JsonResponse
     {
+        $categories = [];
+        foreach ($post->getCategories() as $category) {
+            $categories[] = $category->getName();
+        }
+
         $data = [
             'title' => $post->getTitle(),
             'content' => $post->getContent(),
             'image' => $post->getImage(),
             'username' => $post->getUser()->getUsername(),
             'user_image' => $post->getUser()->getImage(),
+            'categories' => $categories,
         ];
 
         return new JsonResponse($data);
@@ -256,4 +267,25 @@ class PostController extends AbstractController
             'posts' => $posts,
         ]);
     }
+
+
+    // src/Controller/PostController.php
+
+    #[Route('/post/filter', name: 'post_filter', methods: ['GET'])]
+    public function filter(Request $request, PostRepository $repository): Response
+    {
+        $categoryId = $request->query->get('category_id');
+        $posts = $repository->findByCategory($categoryId);
+
+        $html = '';
+        foreach ($posts as $post) {
+            $html .= $this->renderView('post/_post.html.twig', [
+                'post' => $post,
+            ]);
+        }
+
+        return new Response($html);
+    }
+
+
 }

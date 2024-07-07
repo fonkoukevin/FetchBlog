@@ -43,6 +43,7 @@ class CategoryController extends AbstractController
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
             'form' => $form->createView(),
+            'show_navbar' => true,
         ]);
     }
 

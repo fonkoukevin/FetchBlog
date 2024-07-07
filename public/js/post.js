@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitComment = document.getElementById('submitComment');
     const commentModal = new bootstrap.Modal(commentModalElement);
     let currentPostId = null;
-
+    const categoryFilter = document.getElementById('category-filter');
+    // const postsContainer = document.getElementById('posts-container');
     const loadPostDetails = (postId) => {
         fetch(`/post/${postId}/details`)
             .then(response => {
@@ -20,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(data => {
+                const categoriesHtml = data.categories.map(category => `<span class="badge bg-secondary">${category}</span>`).join(' ');
+
                 postDetails.innerHTML = `
                     <div class="post-top">
                         <div class="dp">
@@ -33,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h2>${data.title}</h2>
                         <img src="/images/${data.image}" alt="">
                         <p>${data.content}</p>
+                        <div class="post-categories">
+                            ${categoriesHtml}
+                        </div>
                     </div>
                 `;
                 postModal.show();
@@ -41,6 +47,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error loading post details:', error);
             });
     };
+
+
+
+
+    categoryFilter.addEventListener('change', () => {
+        const categoryId = categoryFilter.value;
+
+        fetch(`/post/filter?category_id=${categoryId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                postsContainer.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error during filter:', error);
+            });
+    });
+
 
     const loadComments = (postId) => {
         fetch(`/post/${postId}/comments`)
