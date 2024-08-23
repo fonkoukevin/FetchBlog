@@ -6,12 +6,14 @@ use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Favorite;
 use App\Entity\Like;
+use App\Entity\Notification;
 use App\Entity\Post;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\PostType;
 use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
+use App\Repository\FavoriteRepository;
 use App\Repository\LikeRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -23,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_USER')]
+//#[IsGranted('ROLE_USER')]
 class PostController extends AbstractController
 {
     // src/Controller/PostController.php
@@ -162,6 +164,7 @@ class PostController extends AbstractController
         return new JsonResponse(['message' => 'Post favorited successfully']);
     }
 
+
     #[Route('/post/{id}/details', name: 'post_details', methods: ['GET'])]
     public function postDetails(Post $post): JsonResponse
     {
@@ -226,37 +229,62 @@ class PostController extends AbstractController
 
 
 
-    #[Route('/post/new', name: 'new_post', methods: ['POST'])]
-    public function newPost(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/post/new', name: 'post_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $post->setUser($this->getUser());
+            $user = $this->getUser();
+            $post->setUser($user);
             $post->setCreatedAt(new \DateTimeImmutable());
-            $post->setUpdatedAt(new \DateTimeImmutable());
-            $entityManager->persist($post);
-            $entityManager->flush();
 
-            return $this->redirectToRoute('user_posts');
+            $em->persist($post);
+            $em->flush();
+
+            // Appel à la méthode pour créer les notifications
+//            $this->createNotificationsForSubscribers($post, $em);
+
+            return $this->redirectToRoute('posts');
         }
 
         return $this->render('post/new.html.twig', [
+            'post' => $post,
             'form' => $form->createView(),
         ]);
     }
-    #[Route('/post/favorites', name: 'favorite_posts')]
-    public function favoritePosts(): Response
-    {
-        $user = $this->getUser();
-        $favorites = $user->getFavorites();
 
-        return $this->render('post/favorites.html.twig', [
-            'favorites' => $favorites,
-        ]);
-    }
+//    private function createNotificationsForSubscribers(Post $post, EntityManagerInterface $em): void
+//    {
+//        $user = $post->getUser();
+//        $subscribers = $user->getSubscribers();
+//
+//        foreach ($subscribers as $subscription) {
+//            $subscriber = $subscription->getSubscriber();
+//
+//            $notification = new Notification();
+//            $notification->setUser($subscriber);
+//            $notification->setPost($post);
+//            $notification->setCreatedAt(new \DateTimeImmutable());
+//
+//            $em->persist($notification);
+//        }
+//
+//        $em->flush();
+//    }
+//
+//    #[Route('/post/favorites', name: 'favorite_posts')]
+//    public function favoritePosts(): Response
+//    {
+//        $user = $this->getUser();
+//        $favorites = $user->getFavorites();
+//
+//        return $this->render('post/favorites.html.twig', [
+//            'favorites' => $favorites,
+//        ]);
+//    }
 
     #[Route('/post/user', name: 'user_posts')]
     public function userPosts(PostRepository $postRepository): Response

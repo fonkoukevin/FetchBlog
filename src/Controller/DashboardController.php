@@ -21,7 +21,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[IsGranted('ROLE_USER')]
+//#[IsGranted('ROLE_USER')]
 class DashboardController extends AbstractController
 {
     // DashboardController.php
@@ -82,6 +82,7 @@ class DashboardController extends AbstractController
             'likeCount' => $likeCount,
             'posts' => $user->getPosts(),// Ensure posts are passed to the template
             'currentUserId' => $user->getId(),
+            'currentRole'=>$user->getRoles(),
             'isAdmin' => $isAdmin,
         ]);
     }
@@ -206,17 +207,29 @@ class DashboardController extends AbstractController
     #[Route('/dashboard/delete/{id}', name: 'dashboard_delete', methods: ['POST'])]
     public function delete(Post $post, EntityManagerInterface $entityManager): JsonResponse
     {
-        $status = $entityManager->getRepository(Status::class)->findOneBy(['name' => 'supprimer']);
+        $user = $this->getUser();
 
-        if ($status) {
-            $post->setStatus($status);
+        // Vérifier si l'utilisateur a le rôle ROLE_ADMIN
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            // Suppression définitive du post
+            $entityManager->remove($post);
             $entityManager->flush();
 
             return new JsonResponse(['status' => 'success']);
-        }
+        } else {
+            // Mettre à jour le statut du post comme "supprimé" sans supprimer définitivement
+            $status = $entityManager->getRepository(Status::class)->findOneBy(['name' => 'supprimer']);
+            if ($status) {
+                $post->setStatus($status);
+                $entityManager->flush();
 
-        return new JsonResponse(['status' => 'error'], Response::HTTP_BAD_REQUEST);
+                return new JsonResponse(['status' => 'success']);
+            }
+
+            return new JsonResponse(['status' => 'error'], Response::HTTP_BAD_REQUEST);
+        }
     }
+
 
 
     #[Route('/dashboard/{id}', name: 'user_dashboard', requirements: ['id' => '\d+'])]
@@ -225,6 +238,7 @@ class DashboardController extends AbstractController
         $currentUser = $this->getUser();
 
         // Retrieve the number of favorites
+        
         $favoriteCount = $entityManager->getRepository('App\Entity\Favorite')->countFavoritesByUser($user);
 
         // Retrieve the number of likes
@@ -239,6 +253,7 @@ class DashboardController extends AbstractController
             'likeCount' => $likeCount,
             'posts' => $user->getPosts(), // Ensure posts are passed to the template
             'currentUserId' => $currentUser ? $currentUser->getId() : null,
+            'currentRole'=>$currentUser ? $currentUser->getRoles() : [],
             'postForm' => $currentUser && $currentUser->getId() === $user->getId() ? $this->createForm(PostType::class)->createView() : null,
 
             ]);

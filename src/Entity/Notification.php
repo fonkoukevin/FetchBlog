@@ -19,6 +19,8 @@ class Notification
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Post $post = null;
+    #[ORM\Column(type: 'boolean')]
+    private bool $isRead = false; // Nouveau champ pour suivre l'état de lecture
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     #[ORM\JoinColumn(nullable: false)]
@@ -61,6 +63,17 @@ class Notification
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+    public function isRead(): bool
+    {
+        return $this->isRead;
+    }
+
+    public function setIsRead(bool $isRead): static
+    {
+        $this->isRead = $isRead;
 
         return $this;
     }

@@ -647,19 +647,19 @@
     <!-- NAVBAR -->
     <nav>
         <i class='bx bx-menu'></i>
-        <a href="#" class="nav-link">Categories</a>
+{#        <a href="#" class="nav-link">Categories</a>#}
         <form id="search-form" action="#" onsubmit="return false;">
             {#                <div class="form-input"> #}
             {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
             {#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button> #}
             {#                </div> #}
-            <h4>Dashboard</h4>
+{#            <h4>Dashboard</h4>#}
         </form>
         <input type="checkbox" id="switch-mode" hidden>
         <label for="switch-mode" class="switch-mode"></label>
         <a href="#" class="notification">
-            <i class='bx bxs-bell'></i>
-            <span class="num">8</span>
+{#            <i class='bx bxs-bell'></i>#}
+{#            <span class="num">8</span>#}
         </a>
         {% if app.user %}
             <a href="#" class="profile">
@@ -679,7 +679,7 @@
         <h1>Categories</h1>
 
         <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-            Add New Category
+            Ajouter category
         </button>
 
         <!-- Modal -->
@@ -687,7 +687,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                        <h5 class="modal-title" id="addCategoryModalLabel">Ajouter category</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -710,8 +710,8 @@
                         {{ form_end(form) }}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" style="background-color: #2f5b74" id="saveCategoryBtn">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">fermer</button>
+                        <button type="button" class="btn btn-success" style="background-color: #2f5b74" id="saveCategoryBtn">Soumettre</button>
                     </div>
                 </div>
             </div>

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPostId = null;
     const categoryFilter = document.getElementById('category-filter');
     // const postsContainer = document.getElementById('posts-container');
+
     const loadPostDetails = (postId) => {
         fetch(`/post/${postId}/details`)
             .then(response => {

@@ -13,6 +13,7 @@
                 <i class="fa-regular fa-bookmark favorite-btn" data-post-id="{{ post.id }}"></i>
             {% endif %}
         </div>
+
         <div class="post-content">
             {{ post.title }}
             <img src="{{ asset('images/' ~ post.image) }}" alt="" class="post-image" data-post-id="{{ post.id }}">
@@ -56,4 +57,111 @@
             window.open(whatsappUrl, '_blank');
         });
     });
+
+
+
+
+    // favorite
+    document.addEventListener('DOMContentLoaded', function() {
+        const favoriteButtons = document.querySelectorAll('.favorite-btn, .favorited');
+        favoriteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.classList.contains('favorited')) {
+                    alert('You have already favorited this post.');
+                    return;
+                }
+                const postId = this.getAttribute('data-post-id');
+                fetch(`/post/${postId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': '{{ csrf_token('favorite') }}' // Utiliser un token CSRF pour la sécurité
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Post favorited successfully') {
+                            this.classList.remove('fa-regular', 'fa-bookmark', 'favorite-btn');
+                            this.classList.add('fa-solid', 'fa-bookmark', 'favorited');
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+
+
+    {#document.addEventListener('DOMContentLoaded', function () {#}
+    {#    document.querySelectorAll('.favorite-btn, .favorited').forEach(button => {#}
+    {#        button.addEventListener('click', function () {#}
+    {#            const postId = this.getAttribute('data-post-id');#}
+
+    {#            fetch(`/post/${postId}/favorite`, {#}
+    {#                method: 'POST',#}
+    {#                headers: {#}
+    {#                    'Content-Type': 'application/json',#}
+    {#                    'X-Requested-With': 'XMLHttpRequest',#}
+    {#                    'X-CSRF-Token': '{{ csrf_token('favorite') }}'  // Ajoutez un token CSRF pour la sécurité#}
+    {#                },#}
+    {#            })#}
+    {#                .then(response => response.json())#}
+    {#                .then(data => {#}
+    {#                    if (data.message === 'Post ajouté aux favoris.') {#}
+    {#                        this.classList.remove('fa-regular', 'fa-bookmark', 'favorite-btn');#}
+    {#                        this.classList.add('fa-solid', 'fa-bookmark', 'favorited');#}
+    {#                    } else if (data.message === 'Post retiré des favoris.') {#}
+    {#                        this.classList.remove('fa-solid', 'fa-bookmark', 'favorited');#}
+    {#                        this.classList.add('fa-regular', 'fa-bookmark', 'favorite-btn');#}
+    {#                    } else {#}
+    {#                        alert(data.message);#}
+    {#                    }#}
+    {#                })#}
+    {#                .catch(error => {#}
+    {#                    console.error('Erreur:', error);#}
+    {#                });#}
+    {#        });#}
+    {#    });#}
+    {#});#}
+
+
+    {#document.addEventListener('DOMContentLoaded', function() }#}
+    {#    const favoriteButtons = document.querySelectorAll('.favorite-btn, .favorited');#}
+
+    {#    favoriteButtons.forEach(button => }#}
+    {#        button.addEventListener('click', function() }#}
+    {#            if (this.classList.contains('favorited')) }#}
+    {#                alert('You have already favorited this post.');#}
+    {#                return;#}
+    {#            }#}
+
+    {#            const postId = this.getAttribute('data-post-id');#}
+    {#            fetch(`/post/${postId}/favorite`, }#}
+    {#                method: 'POST',#}
+    {#                headers: }#}
+    {#                    'Content-Type': 'application/json',#}
+    {#                    'X-Requested-With': 'XMLHttpRequest',#}
+    {#                    'X-CSRF-Token': '{{ csrf_token('favorite') }}' // Utiliser un token CSRF pour la sécurité#}
+    {#                }#}
+    {#            })#}
+    {#                .then(response => response.json())#}
+    {#                .then(data => }#}
+    {#                    if (data.message === 'Post favorited successfully') }#}
+    {#                        this.classList.remove('fa-regular', 'fa-bookmark', 'favorite-btn');#}
+    {#                        this.classList.add('fa-solid', 'fa-bookmark', 'favorited');#}
+    {#                    } else }#}
+    {#                        alert(data.message);#}
+    {#                    }#}
+    {#                })#}
+    {#                .catch(error => }#}
+    {#                    console.error('Error:', error);#}
+    {#                });#}
+    {#        });#}
+    {#    });#}
+    {#});#}
+
 </script>

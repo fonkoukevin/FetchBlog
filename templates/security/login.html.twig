@@ -89,19 +89,19 @@
                 <div class="col-md-6 right-box">
                     <div class="row align-items-center">
                         <div class="header-text mb-4">
-                            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-                            <p>We are happy to have you back.</p>
+                            <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
+{#                            <p>connecter vous</p>#}
                         </div>
 
                         <div class="input-group mb-3">
 {#                            <label for="inputUsername">Username</label>#}
-                            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" placeholder="Username"
+                            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" placeholder="nom d'utilisateur"
                                    class="form-control form-control-lg bg-light fs-6" autocomplete="username" required
                                    autofocus>
                         </div>
                         <div class="input-group mb-1">
 {#                            <label for="inputPassword">Password</label>#}
-                            <input type="password" name="password" id="inputPassword" placeholder="Password"
+                            <input type="password" name="password" id="inputPassword" placeholder="Mot de passe"
                                    class="form-control form-control-lg bg-light fs-6" autocomplete="current-password"
                                    required>
                         </div>
@@ -113,24 +113,24 @@
                         <div class="input-group mb-5 d-flex justify-content-between">
                             <div class="checkbox mb-3 form-check">
                                 <label class="form-check-label text-secondary">
-                                    <input type="checkbox" name="_remember_me" class="form-check-input"> Remember me
+                                    <input type="checkbox" name="_remember_me" class="form-check-input"> se souvenir de moi
                                 </label>
                             </div>
                             <div class="forgot">
-                                <small><a href="#">Forgot Password?</a></small>
+                                <small><a href="#">Mot de passe oublié</a></small>
                             </div>
                         </div>
 
                         <div class="input-group mb-3">
                         <button class="btn btn-lg btn-primary w-100 fs-6" type="submit">
-                            Sign in
+                            Connexion
                         </button>
                         </div>
                         <div class="input-group mb-3">
-                            <button class="btn btn-lg btn-light w-100 fs-6"><img src="{{ asset('images/google.png') }}"  style="width:20px" class="me-2"><small>Sign In with Google</small></button>
+                            <button class="btn btn-lg btn-light w-100 fs-6"><img src="{{ asset('images/google.png') }}"  style="width:20px" class="me-2"><small>Connexion Google</small></button>
                         </div>
                         <div class="row">
-                            <small>Don't have account? <a href="{{ path("app_register") }}" alt="">Créer un compte</a></small>
+                            <small> Pas de compte ? <a href="{{ path("app_register") }}" alt="">Créer un compte</a></small>
                         </div>
                     </div>
                 </div>

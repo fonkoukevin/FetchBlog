@@ -7,7 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Persistence\Event\LifecycleEventArgs;
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
@@ -308,6 +309,18 @@ class Post
         return $this;
     }
 
+//    public function isFavoritedByUser(User $user): bool
+//    {
+//        foreach ($this->favorites as $favorite) {
+//            if ($favorite->getUser() === $user) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+// src/Entity/Post.php
+
     public function isFavoritedByUser(User $user): bool
     {
         foreach ($this->favorites as $favorite) {
@@ -317,6 +330,7 @@ class Post
         }
         return false;
     }
+
 
 
     /**
@@ -342,4 +356,70 @@ class Post
 
         return $this;
     }
+
+//    public function notifySubscribers(User $user, Post $post): void
+//    {
+//        $subscribers = $user->getSubscribers();
+//
+//        foreach ($subscribers as $subscription) {
+//            $notification = new Notification();
+//            $notification->setUser($subscription->getSubscriber());
+//            $notification->setPost($post);
+//            $notification->setCreatedAt(new \DateTimeImmutable());
+//
+//            $this->addNotification($notification);
+//        }
+//    }
+
+//
+//    #[ORM\PostPersist]
+//    public function notifySubscribers(LifecycleEventArgs $args)
+//    {
+//        $entityManager = $args->getEntityManager();
+//        $subscriptionRepository = $entityManager->getRepository(Subscription::class);
+//        $notifications = [];
+//
+//        // Récupérer les abonnés de l'utilisateur qui a publié le post
+//        $subscriptions = $subscriptionRepository->findBy(['subscribedTo' => $this->user]);
+//
+//        foreach ($subscriptions as $subscription) {
+//            $notification = new Notification();
+//            $notification->setPost($this);
+//            $notification->setUser($subscription->getSubscriber());
+//            $notification->setCreatedAt(new \DateTimeImmutable());
+//
+//            $entityManager->persist($notification);
+//            $notifications[] = $notification;
+//        }
+//
+//        $entityManager->flush();
+//    }
+
+
+
+    #[ORM\PostPersist]
+    public function notifySubscribers(LifecycleEventArgs $args)
+    {
+        // Récupérer l'EntityManager
+        $entityManager = $args->getObjectManager();
+        $subscriptionRepository = $entityManager->getRepository(Subscription::class);
+
+        // Récupérer les abonnés de l'utilisateur qui a publié le post
+        $subscriptions = $subscriptionRepository->findBy(['subscribedTo' => $this->getUser()]);
+
+        // Créer les notifications pour chaque abonné
+        foreach ($subscriptions as $subscription) {
+            $notification = new Notification();
+            $notification->setPost($this);
+            $notification->setUser($this->getUser());
+            $notification->setCreatedAt(new \DateTimeImmutable());
+
+            // Persister la notification dans l'EntityManager
+            $entityManager->persist($notification);
+        }
+
+        // Sauvegarder les notifications en base de données
+        $entityManager->flush();
+    }
+
 }

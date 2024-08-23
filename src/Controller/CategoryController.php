@@ -18,7 +18,6 @@ class CategoryController extends AbstractController
     public function index(CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $categories = $categoryRepository->findAll();
-
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
@@ -29,17 +28,13 @@ class CategoryController extends AbstractController
             foreach ($category->getPosts() as $post) {
                 $post->addCategory($category);
             }
-
             $entityManager->persist($category);
             $entityManager->flush();
-
             if ($request->isXmlHttpRequest()) {
                 return new Response('Category added successfully', 200);
             }
-
             return $this->redirectToRoute('app_category');
         }
-
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
             'form' => $form->createView(),

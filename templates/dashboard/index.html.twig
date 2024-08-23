@@ -843,7 +843,7 @@
         <!-- NAVBAR -->
         <nav>
             <i class='bx bx-menu'></i>
-            <a href="#" class="nav-link">Categories</a>
+{#            <a href="#" class="nav-link">Categories</a>#}
             <form id="search-form" action="#" onsubmit="return false;">
                 {#                <div class="form-input"> #}
                 {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
@@ -854,8 +854,8 @@
             <input type="checkbox" id="switch-mode" hidden>
             <label for="switch-mode" class="switch-mode"></label>
             <a href="#" class="notification">
-                <i class='bx bxs-bell'></i>
-                <span class="num">8</span>
+{#                <i class='bx bxs-bell'></i>#}
+{#                <span class="num">8</span>#}
             </a>
             {% if app.user %}
                 <a href="#" class="profile">
@@ -941,8 +941,12 @@
                 </div>
             </div>
 
-            {% if currentUserId is not null and (currentUserId == user.id or isAdmin) %}
+            {% if currentUserId is not null and (currentUserId == user.id or isAdmin != "1") %}
             {# dashboard/index.html.twig #}
+{#                {% for yep in currentRole %}#}
+{#                    <li>{{ yep }}</li>#}
+{#                    <li>{{ isAdmin }}</li>#}
+{#                {% endfor %}#}
             <div class="nav-links">
                 <li><a href="#" id="loadFavorites">Favoris</a></li>
                 <li><a href="#" id="loadPosts">Posts</a></li>
@@ -950,6 +954,7 @@
                 <li><a href="#" data-bs-toggle="modal" data-bs-target="#addPostModal">Ajouter Post</a></li>
             </div>
 
+            {% if (isAdmin != "1" or isAdmin == "1") and currentUserId == user.id %}
 
             <div class="modal fade" id="addPostModal">
                 <div class="modal-dialog modal-dialog-centered">
@@ -997,6 +1002,8 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
+
 
             <div id="content">
                 <div id="favoritesContainer"></div>
@@ -1028,6 +1035,7 @@
             </div>
 
             {% else %}
+                <li>{{ isAdmin }}</li>
                 <p>Tu n'as pas la permission de poster ou encore de voir les favori.</p>
             {% endif %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

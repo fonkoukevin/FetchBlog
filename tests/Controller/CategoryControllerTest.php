@@ -105,6 +105,7 @@ class CategoryControllerTest extends WebTestCase
         $this->entityManager = null;
     }
 
+
 //    protected function tearDown(): void
 //    {
 //        parent::tearDown();
