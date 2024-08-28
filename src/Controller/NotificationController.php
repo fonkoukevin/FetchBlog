@@ -49,7 +49,21 @@ class NotificationController extends AbstractController
 
         return $this->render('notification/index.html.twig', [
             'notifications' => $notifications,
-            'show_navbar' => True,
+            'show_navbar' => true,
         ]);
     }
+
+
+    #[Route('/notification/mark-as-read/{id}', name: 'mark_as_read', methods: ['POST'])]
+    public function markAsRead(Notification $notification, EntityManagerInterface $em): Response
+    {
+        // Marquer la notification comme lue
+        $notification->setIsRead(true);
+        $em->persist($notification);
+        $em->flush();
+
+        // Rediriger vers la page de notifications
+        return $this->redirectToRoute('notification');
+    }
+
 }

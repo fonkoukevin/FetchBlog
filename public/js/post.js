@@ -208,6 +208,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     });
+    const switchMode = document.getElementById('switch-mode');
+    //
+    // switchMode.addEventListener('change', function () {
+    //     if (this.checked) {
+    //         document.body.classList.add('dark');
+    //     } else {
+    //         document.body.classList.remove('dark');
+    //     }
+    // })
 
     postModalElement.addEventListener('hidden.bs.modal', () => {
         postDetails.innerHTML = '';

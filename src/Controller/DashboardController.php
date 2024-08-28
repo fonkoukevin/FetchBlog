@@ -7,6 +7,7 @@ use App\Entity\Status;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\PostType;
+use App\Repository\NotificationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,12 +28,12 @@ class DashboardController extends AbstractController
     // DashboardController.php
 
     #[Route('/dashboard', name: 'dashboard')]
-    public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger,NotificationRepository $notificationRepository): Response
     {
         $user = $this->getUser();
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
-
+        $notifications = $notificationRepository->findAll();
         // Handle the form submission
         $form->handleRequest($request);
 
@@ -82,6 +83,7 @@ class DashboardController extends AbstractController
             'likeCount' => $likeCount,
             'posts' => $user->getPosts(),// Ensure posts are passed to the template
             'currentUserId' => $user->getId(),
+            'notifications' => $notifications,
             'currentRole'=>$user->getRoles(),
             'isAdmin' => $isAdmin,
         ]);
@@ -238,7 +240,7 @@ class DashboardController extends AbstractController
         $currentUser = $this->getUser();
 
         // Retrieve the number of favorites
-        
+
         $favoriteCount = $entityManager->getRepository('App\Entity\Favorite')->countFavoritesByUser($user);
 
         // Retrieve the number of likes

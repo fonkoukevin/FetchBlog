@@ -355,7 +355,7 @@
         }
 
         .profile {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .profile-header {
@@ -617,6 +617,35 @@
             background-color: #e9ecef; /* Custom zebra stripe color */
         }
 
+
+
+        #content nav .switch-mode {
+            display: block;
+            min-width: 50px;
+            height: 25px;
+            border-radius: 25px;
+            background: var(--grey);
+            cursor: pointer;
+            position: relative;
+        }
+
+        #content nav .switch-mode::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
+            width: calc(25px - 4px);
+            background: var(--blue);
+            border-radius: 50%;
+            transition: all .3s ease;
+        }
+
+        #content nav #switch-mode:checked + .switch-mode::before {
+            left: calc(100% - (25px - 4px) - 2px);
+        }
+
+
     </style>
 {% endblock %}
 
@@ -624,66 +653,64 @@
 
 <!-- SIDEBAR -->
 <section id="sidebar" style="padding-left: -350px">
-    {#        <a href="#" class="brand"> #}
+    {#        <a href="#" class="brand">#}
     <a class="brand" href="{{ url("home") }}">
 
-        <i class='bx bxs-smile'></i>
+        <i class="fa-solid fa-book ms-4 me-2"></i>
         <span class="text">FetchBlog</span>
     </a>
     <ul class="side-menu top">
         <li>
 
             <a href="{{ url("home") }}">
-                <i class='bx bxs-dashboard'></i>
+                {#                    <i class='bx bxs-dashboard'></i>#}
+                {#                    <i class="fa-solid fa-book"></i>#}
+                <i class="fa-solid fa-house ms-2 me-2"></i>
                 <span class="text">Accueil</span>
             </a>
         </li>
-        <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'post'? 'active' :'' }}"
-               href="{{ path("posts") }}" style="background: none">
+        <li >
+            <a class="librefrank nav-link {{ app.current_route starts with 'post'? 'active' :''}}" href="{{ path("posts") }}" style="background: none">
 
-                <i class='bx bxs-shopping-bag-alt'></i>
+                <i class="fa-solid fa-newspaper ms-2 me-2"></i>
                 <span class="text">Posts</span>
             </a>
         </li>
-        <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :'' }}"
-               href="{{ path("communaute") }}" style="background: none">
+        <li >
+            <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :''}}" href="{{ path("communaute") }}" style="background: none">
 
-                <i class='bx bxs-doughnut-chart'></i>
+                <i class="fa-solid fa-user-group ms-2 me-2"></i>
                 <span class="text">Communauté</span>
             </a>
         </li>
-        <li >
+        <li>
             <a class="librefrank nav-link {{ app.current_route starts with 'apropos'? 'active' :'' }}"
                href="{{ path("app_category") }}" style="background: none">
 
-                <i class='bx bxs-message-dots'></i>
+                <i class="fa-solid fa-table ms-2 me-2"></i>
                 <span class="text">Category</span>
             </a>
         </li>
         <li class="active">
-            <a class="librefrank nav-link {{ app.current_route starts with 'notification'? 'active' :'' }}"
-               href="{{ path("notification") }}" style="background: none">
+            <a class="librefrank nav-link {{ app.current_route starts with 'notification'? 'active' :''}}" href="{{ path("notification") }}" style="background: none">
 
-                <i class='bx bxs-group'></i>
-                <span class="text">notification</span>
+                <i class="fa-solid fa-bell ms-2 me-2"></i>
+                <span class="text">Notification</span>
             </a>
         </li>
     </ul>
     <ul class="side-menu">
         <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :'' }}"
-               href="{{ path("dashboard") }}" style="background: none">
+            <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :''}}" href="{{ path("dashboard") }}" style="background: none">
 
-                <i class='bx bxs-cog'></i>
-                <span class="text">dashboard</span>
+                <i class="fa-solid fa-chart-line ms-2 me-2"></i>
+                <span class="text">Dashboard</span>
             </a>
         </li>
         <li>
             <a href="{{ url('app_logout') }}" class="logout">
-                <i class='bx bxs-log-out-circle'></i>
-                <span class="text">Logout</span>
+                <i class="fa-solid fa-right-from-bracket ms-2 me-2"></i>
+                <span class="text">Déconnexion</span>
             </a>
         </li>
     </ul>
@@ -697,7 +724,8 @@
     <!-- NAVBAR -->
     <nav>
         <i class='bx bx-menu'></i>
-                <a href="#" class="nav-link">Notifications</a>
+        <h5 class="tev" style="font-weight: bold">Notification</h5>
+        {#        <a href="#" class="nav-link">Categories</a>#}
         <form id="search-form" action="#" onsubmit="return false;">
             {#                <div class="form-input"> #}
             {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
@@ -707,12 +735,29 @@
         </form>
         <input type="checkbox" id="switch-mode" hidden>
         <label for="switch-mode" class="switch-mode"></label>
+
+        {% set unread_notifications = notifications|filter(notification => not notification.isRead)|length %}
+
+        <a href="{{ path('notification') }}" class="notification-icon">
+            {% if unread_notifications > 0 %}
+
+                <img src="{{ asset('images/bell notif.png') }}" alt="bell notif" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+
+                {#                <i class="fa-solid fa-bell" style="color: #ff0000;"></i>#}
+            {% else %}
+
+                <img src="{{ asset('images/bell.png') }}" alt="bell" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+
+            {% endif %}
+        </a>
+
+
         <a href="#" class="notification">
-            {#            <i class='bx bxs-bell'></i>#}
-            {#            <span class="num">8</span>#}
+            {#                <i class='bx bxs-bell'></i>#}
+            {#                <span class="num">8</span>#}
         </a>
         {% if app.user %}
-            <a href="#" class="profile">
+            <a href="#" class="profile" style="margin-left: -20px" >
                 {% if app.user.image %}
                     <img src="{{ asset('images/' ~ app.user.image) }}" alt="User Image">
                 {% else %}
@@ -752,6 +797,12 @@
                                     <strong>{{ notification.post.user.username }}</strong> a publié un nouveau post :
                                     <em>{{ notification.post.title }}</em>
                                     <span style="font-size: 10px;color: #6a5b5b"> {{ notification.createdAt|date('d/m/Y H:i') }}.</span>
+
+                                    <form action="{{ path('mark_as_read', { 'id': notification.id }) }}" method="post">
+                                        <input type="checkbox" name="isRead" onchange="this.form.submit()"
+                                               {% if notification.isRead %}checked{% endif %}>
+                                        <label for="isRead" style="font-size: 12px; color: #aeaeae">Marquer comme lu</label>
+                                    </form>
                                 </div>
                             </div>
                         </td>
@@ -762,9 +813,114 @@
         </div>
 
 
+{#        {% block body %}#}
+{#            <h1>Notifications</h1>#}
+
+{#            {% if notifications is empty %}#}
+{#                <p>Vous n'avez aucune notification pour le moment.</p>#}
+{#            {% else %}#}
+{#                <ul>#}
+{#                    {% for notification in notifications %}#}
+{#                        <li>#}
+{#                            {{ notification.post.user.username }} a publié un nouveau post : {{ notification.post.title }}.#}
+
+{#                            <!-- Checkbox pour marquer comme lu -->#}
+{#                            <form action="{{ path('mark_as_read', { 'id': notification.id }) }}" method="post">#}
+{#                                <input type="checkbox" name="isRead" onchange="this.form.submit()"#}
+{#                                       {% if notification.isRead %}checked{% endif %}>#}
+{#                                <label for="isRead">Marquer comme lu</label>#}
+{#                            </form>#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            {% endif %}#}
+{#        {% endblock %}#}
+        <script>
+            const switchMode = document.getElementById('switch-mode');
+
+            switchMode.addEventListener('change', function () {
+                if (this.checked) {
+                    document.body.classList.add('dark');
+                } else {
+                    document.body.classList.remove('dark');
+                }
+            })
+        </script>
 
 
+        <script>
+
+
+            const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+
+            allSideMenu.forEach(item => {
+                const li = item.parentElement;
+
+                item.addEventListener('click', function () {
+                    allSideMenu.forEach(i => {
+                        i.parentElement.classList.remove('active');
+                    })
+                    li.classList.add('active');
+                })
+            });
+
+
+            // TOGGLE SIDEBAR
+            const menuBar = document.querySelector('#content nav .bx.bx-menu');
+            const sidebar = document.getElementById('sidebar');
+
+            menuBar.addEventListener('click', function () {
+                sidebar.classList.toggle('hide');
+            })
+
+
+            const searchButton = document.querySelector('#content nav form .form-input button');
+            const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
+            const searchForm = document.querySelector('#content nav form');
+
+            searchButton.addEventListener('click', function (e) {
+                if (window.innerWidth < 576) {
+                    e.preventDefault();
+                    searchForm.classList.toggle('show');
+                    if (searchForm.classList.contains('show')) {
+                        searchButtonIcon.classList.replace('bx-search', 'bx-x');
+                    } else {
+                        searchButtonIcon.classList.replace('bx-x', 'bx-search');
+                    }
+                }
+            })
+
+
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('hide');
+            } else if (window.innerWidth > 576) {
+                searchButtonIcon.classList.replace('bx-x', 'bx-search');
+                searchForm.classList.remove('show');
+            }
+
+
+            window.addEventListener('resize', function () {
+                if (this.innerWidth > 576) {
+                    searchButtonIcon.classList.replace('bx-x', 'bx-search');
+                    searchForm.classList.remove('show');
+                }
+            })
+
+
+            const switchMode = document.getElementById('switch-mode');
+
+            switchMode.addEventListener('change', function () {
+                if (this.checked) {
+                    document.body.classList.add('dark');
+                } else {
+                    document.body.classList.remove('dark');
+                }
+            })
+        </script>
     </div>
+
+
+
 
 
     {% endblock %}

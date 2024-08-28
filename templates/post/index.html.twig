@@ -320,6 +320,7 @@
 
         .profile {
             margin-bottom: 10px;
+            /*margin-left: -20px;*/
         }
 
         .profile-header {
@@ -701,18 +702,36 @@
             </div>
             <form id="search-form" action="#" onsubmit="return false;">
                 <div class="form-input">
-                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off">
+                    <input type="search" id="search-input" placeholder="
+Rechercher..." autocomplete="off">
                     <button class="search-btn not-clickable"><i class='bx bx-search'></i></button>
                 </div>
             </form>
             <input type="checkbox" id="switch-mode" hidden>
             <label for="switch-mode" class="switch-mode"></label>
+
+            {% set unread_notifications = notifications|filter(notification => not notification.isRead)|length %}
+
+            <a href="{{ path('notification') }}" class="notification-icon">
+                {% if unread_notifications > 0 %}
+
+                    <img src="{{ asset('images/bell notif.png') }}" alt="bell notif" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+
+                    {#                <i class="fa-solid fa-bell" style="color: #ff0000;"></i>#}
+                {% else %}
+
+                    <img src="{{ asset('images/bell.png') }}" alt="bell" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+
+                {% endif %}
+            </a>
+
+
             <a href="#" class="notification">
 {#                <i class='bx bxs-bell'></i>#}
 {#                <span class="num">8</span>#}
             </a>
             {% if app.user %}
-                <a href="#" class="profile" >
+                <a href="#" class="profile" style="margin-left: -20px" >
                     {% if app.user.image %}
                         <img src="{{ asset('images/' ~ app.user.image) }}" alt="User Image">
                     {% else %}
@@ -932,10 +951,12 @@
         switchMode.addEventListener('change', function () {
             if (this.checked) {
                 document.body.classList.add('dark');
+
             } else {
                 document.body.classList.remove('dark');
             }
-        })</script>
+        })
+    </script>
 {% endblock %}
 
 

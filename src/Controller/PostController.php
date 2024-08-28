@@ -15,6 +15,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
 use App\Repository\FavoriteRepository;
 use App\Repository\LikeRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,16 +32,17 @@ class PostController extends AbstractController
     // src/Controller/PostController.php
 
     #[Route('/post', name: 'posts')]
-    public function index(PostRepository $repository, UserRepository $userRepository, CategoryRepository $categoryRepository): Response
+    public function index(NotificationRepository $notificationRepository, PostRepository $repository, UserRepository $userRepository, CategoryRepository $categoryRepository): Response
     {
         $statusId = 1; // ID du statut "créé"
         $posts = $repository->findByStatus($statusId);
         $topUsers = $userRepository->findTopUsersBySubscribers();
         $categories = $categoryRepository->findAll();
-
+        $notifications = $notificationRepository->findAll();
         return $this->render('post/index.html.twig', [
             'posts' => $posts,
             'topUsers' => $topUsers,
+            'notifications' => $notifications,
             'categories' => $categories,
             'show_navbar' => true,
         ]);
@@ -243,9 +245,6 @@ class PostController extends AbstractController
 
             $em->persist($post);
             $em->flush();
-
-            // Appel à la méthode pour créer les notifications
-//            $this->createNotificationsForSubscribers($post, $em);
 
             return $this->redirectToRoute('posts');
         }

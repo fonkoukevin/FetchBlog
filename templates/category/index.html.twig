@@ -326,7 +326,8 @@
         }
 
         .profile {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+
         }
 
         .profile-header {
@@ -574,33 +575,33 @@
 
 <!-- SIDEBAR -->
 <section id="sidebar" style="padding-left: -350px">
-    {#        <a href="#" class="brand"> #}
+    {#        <a href="#" class="brand">#}
     <a class="brand" href="{{ url("home") }}">
 
-        <i class='bx bxs-smile'></i>
+        <i class="fa-solid fa-book ms-4 me-2"></i>
         <span class="text">FetchBlog</span>
     </a>
     <ul class="side-menu top">
         <li>
 
             <a href="{{ url("home") }}">
-                <i class='bx bxs-dashboard'></i>
+                {#                    <i class='bx bxs-dashboard'></i>#}
+                {#                    <i class="fa-solid fa-book"></i>#}
+                <i class="fa-solid fa-house ms-2 me-2"></i>
                 <span class="text">Accueil</span>
             </a>
         </li>
-        <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'post'? 'active' :'' }}"
-               href="{{ path("posts") }}" style="background: none">
+        <li >
+            <a class="librefrank nav-link {{ app.current_route starts with 'post'? 'active' :''}}" href="{{ path("posts") }}" style="background: none">
 
-                <i class='bx bxs-shopping-bag-alt'></i>
+                <i class="fa-solid fa-newspaper ms-2 me-2"></i>
                 <span class="text">Posts</span>
             </a>
         </li>
-        <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :'' }}"
-               href="{{ path("communaute") }}" style="background: none">
+        <li >
+            <a class="librefrank nav-link {{ app.current_route starts with 'communaute'? 'active' :''}}" href="{{ path("communaute") }}" style="background: none">
 
-                <i class='bx bxs-doughnut-chart'></i>
+                <i class="fa-solid fa-user-group ms-2 me-2"></i>
                 <span class="text">Communauté</span>
             </a>
         </li>
@@ -608,32 +609,30 @@
             <a class="librefrank nav-link {{ app.current_route starts with 'apropos'? 'active' :'' }}"
                href="{{ path("app_category") }}" style="background: none">
 
-                <i class='bx bxs-message-dots'></i>
+                <i class="fa-solid fa-table ms-2 me-2"></i>
                 <span class="text">Category</span>
             </a>
         </li>
         <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'notification'? 'active' :'' }}"
-               href="{{ path("notification") }}" style="background: none">
+            <a class="librefrank nav-link {{ app.current_route starts with 'notification'? 'active' :''}}" href="{{ path("notification") }}" style="background: none">
 
-                <i class='bx bxs-group'></i>
-                <span class="text">notification</span>
+                <i class="fa-solid fa-bell ms-2 me-2"></i>
+                <span class="text">Notification</span>
             </a>
         </li>
     </ul>
     <ul class="side-menu">
         <li>
-            <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :'' }}"
-               href="{{ path("dashboard") }}" style="background: none">
+            <a class="librefrank nav-link {{ app.current_route starts with 'dashboard'? 'active' :''}}" href="{{ path("dashboard") }}" style="background: none">
 
-                <i class='bx bxs-cog'></i>
-                <span class="text">dashboard</span>
+                <i class="fa-solid fa-chart-line ms-2 me-2"></i>
+                <span class="text">Dashboard</span>
             </a>
         </li>
         <li>
             <a href="{{ url('app_logout') }}" class="logout">
-                <i class='bx bxs-log-out-circle'></i>
-                <span class="text">Logout</span>
+                <i class="fa-solid fa-right-from-bracket ms-2 me-2"></i>
+                <span class="text">Déconnexion</span>
             </a>
         </li>
     </ul>
@@ -647,22 +646,40 @@
     <!-- NAVBAR -->
     <nav>
         <i class='bx bx-menu'></i>
-{#        <a href="#" class="nav-link">Categories</a>#}
+        <h5 style="font-weight: bold">Categories</h5>
+        {#        <a href="#" class="nav-link">Categories</a>#}
         <form id="search-form" action="#" onsubmit="return false;">
             {#                <div class="form-input"> #}
             {#                    <input type="search" id="search-input" placeholder="Search..." autocomplete="off"> #}
             {#                    <button class="search-btn not-clickable"><i class='bx bx-search'></i></button> #}
             {#                </div> #}
-{#            <h4>Dashboard</h4>#}
+            {#            <h4>Dashboard</h4>#}
         </form>
         <input type="checkbox" id="switch-mode" hidden>
         <label for="switch-mode" class="switch-mode"></label>
+
+        {% set unread_notifications = notifications|filter(notification => not notification.isRead)|length %}
+
+        <a href="{{ path('notification') }}" class="notification-icon">
+            {% if unread_notifications > 0 %}
+
+                <img src="{{ asset('images/bell notif.png') }}" alt="bell notif" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+
+                {#                <i class="fa-solid fa-bell" style="color: #ff0000;"></i>#}
+            {% else %}
+
+                <img src="{{ asset('images/bell.png') }}" alt="bell" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+
+            {% endif %}
+        </a>
+
+
         <a href="#" class="notification">
-{#            <i class='bx bxs-bell'></i>#}
-{#            <span class="num">8</span>#}
+            {#                <i class='bx bxs-bell'></i>#}
+            {#                <span class="num">8</span>#}
         </a>
         {% if app.user %}
-            <a href="#" class="profile">
+            <a href="#" class="profile" style="margin-left: -20px" >
                 {% if app.user.image %}
                     <img src="{{ asset('images/' ~ app.user.image) }}" alt="User Image">
                 {% else %}
@@ -676,10 +693,10 @@
         {% endif %}
     </nav>
     <div class="container mt-5">
-        <h1>Categories</h1>
+{#        <h1>Categories</h1>#}
 
-        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-            Ajouter category
+        <button type="button" class="btn btn-primary mb-3" style="background-color: black;border-radius: 25px" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            Ajouter une category
         </button>
 
         <!-- Modal -->
@@ -721,34 +738,60 @@
             <thead>
             <tr>
                 <th>Nom</th>
-                <th style="margin-left: 30px; padding-left: 30px">Posts</th>
-                <th>Actions</th>
+                <th style="padding-left: 30px">Posts</th>
+                <th class="text-end" style="padding-right: 30px">Actions</th> <!-- Aligner le titre "Actions" à droite -->
             </tr>
             </thead>
             <tbody>
             {% for category in categories %}
                 <tr id="category-{{ category.id }}">
-                    <td>{{ category.name }}</td>
-                    <td>
-                        <ul class="post-list">
+                    <td style="vertical-align: middle;">{{ category.name }}</td> <!-- Aligner le texte au milieu verticalement -->
+                    <td style="vertical-align: middle;">
+                        <ul class="post-list mb-0"> <!-- Retirer les marges des listes -->
                             {% for post in category.posts %}
                                 <li>{{ post.title }}</li>
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>
+                    <td class="text-end" style="vertical-align: middle;"> <!-- Aligner le contenu des actions à droite et au milieu -->
                         <div class="d-flex justify-content-end gap-1">
-                            <a href="{{ path('app_category_edit', { id: category.id }) }}" style="background-color: #2f5b74" class="btn btn-primary btn-sm">Edit</a>
-                            <button class="btn btn-danger btn-sm delete-category-btn" style="background-color: #bf163c" data-id="{{ category.id }}">Delete</button>
+                            <a href="{{ path('app_category_edit', { id: category.id }) }}" class="btn btn-primary btn-sm" style="background-color: #2f5b74;">Edit</a>
+                            <button class="btn btn-danger btn-sm delete-category-btn" style="background-color: #bf163c;" data-id="{{ category.id }}">Delete</button>
                         </div>
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+
     </div>
+    <script>
+        const switchMode = document.getElementById('switch-mode');
+
+        switchMode.addEventListener('change', function () {
+            if (this.checked) {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+        })
+    </script>
 
     <script>
+
+        const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+
+        allSideMenu.forEach(item => {
+            const li = item.parentElement;
+
+            item.addEventListener('click', function () {
+                allSideMenu.forEach(i => {
+                    i.parentElement.classList.remove('active');
+                })
+                li.classList.add('active');
+            })
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('categoryForm');
             const saveButton = document.getElementById('saveCategoryBtn');

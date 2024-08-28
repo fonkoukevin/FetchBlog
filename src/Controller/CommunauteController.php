@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\NotificationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class CommunauteController extends AbstractController
 {
     #[Route('/communaute', name: 'communaute', methods: ['GET'])]
-    public function list(EntityManagerInterface $em): Response
+    public function list(EntityManagerInterface $em, NotificationRepository $notificationRepository): Response
     {
         $currentUser = $this->getUser();
         $users = $em->getRepository(User::class)->createQueryBuilder('u')
@@ -21,10 +22,11 @@ class CommunauteController extends AbstractController
             ->setParameter('currentUserId', $currentUser->getId())
             ->getQuery()
             ->getResult();
-
+        $notifications = $notificationRepository->findAll();
         return $this->render('communaute/index.html.twig',  [
             'users' => $users,
-            'show_navbar' => True, // Indique que la barre de navigation ne doit pas être affichée
+            'notifications' => $notifications,
+            'show_navbar' => true,
         ]);
     }
 }
