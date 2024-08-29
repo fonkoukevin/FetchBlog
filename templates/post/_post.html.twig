@@ -7,11 +7,12 @@
             <div class="post-info">
                 <p class="name">{{ post.user.username }}</p>
             </div>
-            {% if post.isFavoritedByUser(app.user) %}
+            {% if app.user is not null and post.isFavoritedByUser(app.user) %}
                 <i class="fa-solid fa-bookmark favorited" data-post-id="{{ post.id }}"></i>
             {% else %}
                 <i class="fa-regular fa-bookmark favorite-btn" data-post-id="{{ post.id }}"></i>
             {% endif %}
+
         </div>
 
         <div class="post-content">

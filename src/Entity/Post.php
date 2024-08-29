@@ -209,7 +209,7 @@ class Post
 
         return $this;
     }
-    public function isLikedByUser(User $user): bool
+    public function isLikedByUser(?User $user): bool
     {
         foreach ($this->likes as $like) {
             if ($like->getUser() === $user) {
@@ -321,7 +321,7 @@ class Post
 
 // src/Entity/Post.php
 
-    public function isFavoritedByUser(User $user): bool
+    public function isFavoritedByUser(?User $user): bool
     {
         foreach ($this->favorites as $favorite) {
             if ($favorite->getUser() === $user) {

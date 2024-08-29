@@ -246,6 +246,9 @@ class PostController extends AbstractController
             $em->persist($post);
             $em->flush();
 
+            // Appel à la méthode pour créer les notifications
+//            $this->createNotificationsForSubscribers($post, $em);
+
             return $this->redirectToRoute('posts');
         }
 
